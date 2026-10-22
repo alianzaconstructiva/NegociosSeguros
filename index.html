@@ -6,14 +6,14 @@
     <title>Comercio Seguro - Red de Comerciantes</title>
     <style>
         :root {
-            --bg-dark: #0a0e17;
-            --card-bg: #131a29;
-            --card-border: #1e293b;
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
+            --bg-dark: #0f1015;
+            --card-bg: #181b22;
+            --card-border: #262c38;
+            --primary: #e50914; /* Rojo estilo Netflix */
+            --primary-hover: #b20710;
             --accent: #10b981;
-            --text-main: #f8fafc;
-            --text-sub: #94a3b8;
+            --text-main: #ffffff;
+            --text-sub: #8c939d;
             --danger: #ef4444;
             --warning: #f59e0b;
         }
@@ -32,18 +32,27 @@
             justify-content: center;
             min-height: 100vh;
             overflow-x: hidden;
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)), url('https://assets.nflxext.com/ffe/siteui/vlv3/efb4855d-e702-43e5-9997-bbaad1541c4b/4c2fed47-81b8-4f47-b53d-2491a92e4282/ES-es-20230417-popsignuptwoweeks-perspective_alpha_website_small.jpg');
+            background-size: cover;
+            background-position: center;
         }
 
         .app-container {
             width: 100%;
             max-width: 480px;
-            background-color: var(--bg-dark);
+            background-color: rgba(15, 16, 21, 0.95);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
             overflow-x: hidden;
+        }
+
+        /* Expande el contenedor para el diseño mIRC cuando el usuario inicia sesión */
+        .app-container.chat-active {
+            max-width: 1000px;
         }
 
         header {
@@ -59,12 +68,10 @@
         }
 
         .brand-title {
-            font-size: 1.1rem;
-            font-weight: bold;
+            font-size: 1.2rem;
+            font-weight: 800;
             color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            letter-spacing: 0.5px;
         }
 
         .brand-title span {
@@ -104,15 +111,16 @@
             background-color: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 12px;
-            padding: 15px;
+            padding: 20px;
             width: 100%;
             box-sizing: border-box;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
         }
 
         .card-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
             color: var(--text-main);
             display: flex;
             justify-content: space-between;
@@ -120,7 +128,7 @@
         }
 
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             display: flex;
             flex-direction: column;
             gap: 6px;
@@ -133,14 +141,15 @@
 
         input, textarea, select {
             width: 100%;
-            padding: 10px 12px;
+            padding: 12px 14px;
             border-radius: 8px;
             border: 1px solid var(--card-border);
-            background-color: #0f172a;
+            background-color: #0b0c10;
             color: var(--text-main);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             outline: none;
             box-sizing: border-box;
+            transition: border-color 0.2s;
         }
 
         input:focus, textarea:focus {
@@ -157,7 +166,7 @@
             font-weight: 600;
             font-size: 0.95rem;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.1s;
             text-align: center;
         }
 
@@ -165,10 +174,19 @@
             background-color: var(--primary-hover);
         }
 
+        .btn:active {
+            transform: scale(0.98);
+        }
+
         .btn-secondary {
             background-color: transparent;
             border: 1px solid var(--card-border);
             color: var(--text-sub);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255,255,255,0.05);
+            color: var(--text-main);
         }
 
         .btn-admin-access {
@@ -179,77 +197,156 @@
             margin-top: 10px;
         }
 
-        .chat-box {
-            height: 280px;
-            overflow-y: auto;
+        /* Entradas de PIN tipo WhatsApp / Banco */
+        .pin-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .pin-input {
+            width: 50px;
+            height: 60px;
+            font-size: 1.5rem;
+            text-align: center;
+            background-color: #0b0c10;
+            border: 2px solid var(--card-border);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-weight: bold;
+        }
+
+        .pin-input:focus {
+            border-color: var(--primary);
+        }
+
+        /* Diseño de Panel Principal estilo mIRC / Discord */
+        .mirc-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 15px;
+            flex: 1;
+            width: 100%;
+            min-height: 75vh;
+        }
+
+        @media (max-width: 768px) {
+            .mirc-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .mirc-sidebar {
+            background-color: var(--card-bg);
             border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-sub);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .user-list-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
             border-radius: 8px;
-            padding: 10px;
-            background-color: #0f172a;
+            background: #0b0c10;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .user-list-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent);
+            border-radius: 50%;
+        }
+
+        .mirc-main-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .post-creator {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            width: 100%;
         }
 
-        .message {
-            max-width: 85%;
-            padding: 8px 12px;
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 55vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .post-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: 10px;
-            font-size: 0.85rem;
-            line-height: 1.3;
-            word-wrap: break-word;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .message.received {
-            background-color: #1e293b;
-            align-self: flex-start;
-            border-bottom-left-radius: 2px;
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-sub);
         }
 
-        .message.sent {
-            background-color: var(--primary);
-            align-self: flex-end;
-            border-bottom-right-radius: 2px;
-        }
-
-        .message .author {
-            font-size: 0.7rem;
+        .post-author {
             color: var(--accent);
             font-weight: bold;
-            margin-bottom: 2px;
         }
 
-        .chat-input-group {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .tab-menu {
-            display: flex;
-            gap: 5px;
-            background-color: #0f172a;
-            padding: 4px;
+        .post-image {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-top: 5px;
         }
 
-        .tab-btn {
-            flex: 1;
-            padding: 8px;
-            font-size: 0.8rem;
-            background: none;
-            border: none;
-            color: var(--text-sub);
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .tab-btn.active {
-            background-color: var(--card-bg);
-            color: var(--text-main);
-            font-weight: bold;
+        .notice-box {
+            background-color: rgba(229, 9, 20, 0.1);
+            border: 1px solid rgba(229, 9, 20, 0.3);
+            color: #ffb4b4;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            line-height: 1.4;
         }
 
         .admin-table {
@@ -266,34 +363,15 @@
         }
 
         .admin-table th {
-            background-color: #0f172a;
+            background-color: #0b0c10;
             color: var(--text-sub);
-        }
-
-        .code-pill {
-            background-color: rgba(37, 99, 235, 0.2);
-            color: #60a5fa;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-weight: bold;
-        }
-
-        .notice-box {
-            background-color: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            color: #fbbf24;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            margin-bottom: 10px;
         }
 
         .toggle-box {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #0f172a;
+            background-color: #0b0c10;
             padding: 10px 12px;
             border-radius: 8px;
             border: 1px solid var(--card-border);
@@ -303,7 +381,7 @@
 </head>
 <body>
 
-<div class="app-container">
+<div id="appContainer" class="app-container">
     <header>
         <div class="brand-title">
             Comercio<span>Seguro</span>
@@ -320,7 +398,7 @@
             <div class="card">
                 <div class="card-title">Registro Antifraude de Comerciantes</div>
                 <div class="notice-box">
-                    🛡️ Sus datos se guardan en la nube para el Administrador. Al registrarse, se abrirá un SMS para notificar su solicitud al 56373393.
+                    🛡️ Sus datos se guardan de forma segura. Al registrarse, se abrirá un SMS para notificar su solicitud al 56373393.
                 </div>
                 <form id="formRegister">
                     <div class="form-group">
@@ -347,7 +425,7 @@
                         <label>Nick / Apodo Público</label>
                         <input type="text" id="regNick" required placeholder="Ej. CarlosG">
                     </div>
-                    <button type="submit" class="btn">Enviar Solicitud de Registro</button>
+                    <button type="submit" class="btn" style="margin-top: 5px;">Enviar Solicitud de Registro</button>
                 </form>
                 <button class="btn btn-secondary" style="margin-top: 10px;" id="btnGoToLogin">
                     ¿Ya tienes tu código? Inicia Sesión
@@ -358,24 +436,27 @@
             </div>
         </div>
 
-        <!-- VISTA 2: LOGIN CON CÓDIGO -->
+        <!-- VISTA 2: LOGIN CON PIN TIPO WHATSAPP -->
         <div id="viewLogin" class="view-section">
-            <div class="card">
-                <div class="card-title">Ingreso a la Red</div>
-                <div class="notice-box">
-                    📲 Introduce tu Nick registrado y tu código de verificación.
+            <div class="card" style="text-align: center;">
+                <div class="card-title" style="justify-content: center;">Verificación de Código</div>
+                <div class="notice-box" style="text-align: left;">
+                    📲 Introduce tu Nick y digita tu código de verificación de 4 dígitos para acceder a la red.
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="text-align: left;">
                     <label>Tu Nick Público</label>
                     <input type="text" id="loginNick" placeholder="Ej. CarlosG">
                 </div>
-                <div class="form-group">
-                    <label>Código Recibido</label>
-                    <input type="password" id="loginCode" placeholder="Ej. @#$123">
+                <label style="margin-top: 15px; display: block; text-align: left;">Código de Acceso (@#$XXX)</label>
+                <div class="pin-container">
+                    <input type="text" maxlength="1" class="pin-input" id="pin1" autocomplete="off">
+                    <input type="text" maxlength="1" class="pin-input" id="pin2" autocomplete="off">
+                    <input type="text" maxlength="1" class="pin-input" id="pin3" autocomplete="off">
+                    <input type="text" maxlength="1" class="pin-input" id="pin4" autocomplete="off">
                 </div>
-                <button class="btn" id="btnLogin">Ingresar a la Plataforma</button>
+                <button class="btn" id="btnLogin" style="margin-top: 10px;">Verificar e Ingresar</button>
                 <button class="btn btn-secondary" style="margin-top: 10px;" id="btnBackToRegister">
-                    Volver al Formulario de Registro
+                    Volver al Registro
                 </button>
             </div>
         </div>
@@ -399,27 +480,44 @@
             </div>
         </div>
 
-        <!-- VISTA 4: PANEL DE COMERCIANTE -->
+        <!-- VISTA 4: PANEL PRINCIPAL (ESTILO mIRC / DISCORD) -->
         <div id="viewMainApp" class="view-section">
-            <div class="tab-menu">
-                <button class="tab-btn active">Chat Global</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <div style="font-weight: bold; font-size: 1rem;">Red Global de Comerciantes</div>
+                <button class="btn btn-secondary" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" id="btnLogoutUser">Cerrar Sesión</button>
             </div>
 
-            <div id="tabGlobal" class="card">
-                <div class="card-title">Chat Global de Comerciantes</div>
-                <div class="chat-box" id="globalChatBox">
-                    <div class="message received">
-                        <div class="author">@Sistema</div>
-                        Bienvenido a la red conectada a la nube.
+            <div class="mirc-layout">
+                <!-- Barra lateral: Comerciantes en línea -->
+                <div class="mirc-sidebar">
+                    <div class="sidebar-title">Comerciantes en Línea</div>
+                    <div id="sidebarUserList" style="display: flex; flex-direction: column; gap: 6px;">
+                        <!-- Dinámico -->
                     </div>
                 </div>
-                <div class="chat-input-group">
-                    <input type="text" id="globalMsgInput" placeholder="Escribe un mensaje público...">
-                    <button class="btn" style="width: auto; padding: 0 15px;" id="btnSendGlobal">Enviar</button>
+
+                <!-- Panel principal: Creador de publicaciones y Muro/Chat -->
+                <div class="mirc-main-panel">
+                    <div class="post-creator">
+                        <div style="font-size: 0.9rem; font-weight: bold;">Crear Publicación / Alerta</div>
+                        <textarea id="postTextContent" rows="2" placeholder="¿Qué deseas reportar o compartir con la red?"></textarea>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <input type="text" id="postImageURL" placeholder="URL de imagen opcional (https://...)" style="flex: 1;">
+                            <button class="btn" id="btnPublishPost" style="width: auto; padding: 10px 20px;">Publicar</button>
+                        </div>
+                    </div>
+
+                    <div class="card" style="flex: 1; padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="font-size: 0.9rem; font-weight: bold; display: flex; justify-content: space-between;">
+                            <span>Muro y Chat Público</span>
+                            <span id="activeChatTarget" style="font-size: 0.75rem; color: var(--accent);">Canal General</span>
+                        </div>
+                        <div class="feed-container" id="globalFeedContainer">
+                            <!-- Publicaciones y mensajes dinámicos -->
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <button class="btn btn-secondary" style="margin-top: 10px;" id="btnLogoutUser">Cerrar Sesión</button>
         </div>
 
         <!-- VISTA 5: PANEL ADMINISTRADOR -->
@@ -441,7 +539,7 @@
                 </div>
 
                 <div class="notice-box">
-                    📋 Lista sincronizada en tiempo real. Puedes ver contraseñas, editarlas o borrar cuentas.
+                    📋 Lista sincronizada en tiempo real. Puedes ver códigos, editarlos o borrar cuentas.
                 </div>
                 <div style="overflow-x: auto;">
                     <table class="admin-table">
@@ -467,7 +565,7 @@
 <!-- SDK MODULAR OFICIAL DE FIREBASE -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, get, update, remove, onValue, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDHd_O5RYR88WFWgdhaZiK5RVvXRmExyAM",
@@ -485,6 +583,23 @@
     let users = {};
     let currentUser = null;
     let allowAnyCode = false;
+    let directTargetUser = null;
+
+    // Configuración de los inputs de PIN tipo WhatsApp (salto automático)
+    const pinInputs = [document.getElementById('pin1'), document.getElementById('pin2'), document.getElementById('pin3'), document.getElementById('pin4')];
+    pinInputs.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (val && index < pinInputs.length - 1) {
+                pinInputs[index + 1].focus();
+            }
+        });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                pinInputs[index - 1].focus();
+            }
+        });
+    });
 
     // Escuchar usuarios en tiempo real
     onValue(ref(db, 'users'), (snapshot) => {
@@ -492,6 +607,15 @@
         if (document.getElementById('viewAdminPanel').classList.contains('active')) {
             renderAdminTable();
         }
+        if (document.getElementById('viewMainApp').classList.contains('active')) {
+            renderSidebarUsers();
+        }
+    });
+
+    // Escuchar publicaciones y chat en tiempo real
+    onValue(ref(db, 'posts'), (snapshot) => {
+        const postsData = snapshot.val() || {};
+        renderFeed(postsData);
     });
 
     // Escuchar modo de validación
@@ -503,9 +627,15 @@
     function showView(viewId) {
         document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
+        const container = document.getElementById('appContainer');
+        if (viewId === 'viewMainApp') {
+            container.classList.add('chat-active');
+        } else {
+            container.classList.remove('chat-active');
+        }
     }
 
-    // Eventos de botones
+    // Botones de navegación
     document.getElementById('btnGoToLogin').addEventListener('click', () => showView('viewLogin'));
     document.getElementById('btnBackToRegister').addEventListener('click', () => showView('viewRegister'));
     document.getElementById('btnGoToAdminLogin').addEventListener('click', () => showView('viewAdminLogin'));
@@ -529,11 +659,12 @@
         const nickExists = Object.values(allUsers).some(u => u.nick.toLowerCase() === nick.toLowerCase());
 
         if (nickExists) {
-            alert('El Nick ya está registrado por otro comerciante. Elige otro.');
+            alert('El Nick ya está registrado por otro comerciante. Por favor elige otro.');
             return;
         }
 
-        const code = "@#$" + Math.floor(100 + Math.random() * 900);
+        const codeNum = Math.floor(1000 + Math.random() * 9000);
+        const code = "@#$" + codeNum;
         const userKey = nick.toLowerCase().replace(/[^a-z0-9]/g, '_');
 
         await set(ref(db, 'users/' + userKey), {
@@ -550,13 +681,13 @@
         showView('viewLogin');
     });
 
-    // LOGIN
+    // INICIO DE SESIÓN CON PINS TIPO WHATSAPP
     document.getElementById('btnLogin').addEventListener('click', async () => {
         const nickInput = document.getElementById('loginNick').value.trim().toLowerCase();
-        const codeInput = document.getElementById('loginCode').value.trim();
+        const codeInput = "@#$" + pinInputs.map(i => i.value).join('');
 
-        if (!nickInput || !codeInput) {
-            alert('Completa el Nick y el Código.');
+        if (!nickInput || pinInputs.some(i => !i.value)) {
+            alert('Por favor completa tu Nick y los 4 dígitos del código.');
             return;
         }
 
@@ -581,120 +712,185 @@
         if (allowAnyCode) {
             await update(ref(db, 'users/' + userKeyFound), { code: codeInput });
             foundUser.code = codeInput;
-            currentUser = foundUser;
-            document.getElementById('displayNick').innerText = currentUser.nick;
-            document.getElementById('headerBadge').style.display = 'block';
-            showView('viewMainApp');
-        } else {
-            if (foundUser.code === codeInput) {
-                currentUser = foundUser;
-                document.getElementById('displayNick').innerText = currentUser.nick;
-                document.getElementById('headerBadge').style.display = 'block';
-                showView('viewMainApp');
-            } else {
-                alert('Código de acceso incorrecto.');
-            }
         }
+
+        if (foundUser.code !== codeInput) {
+            alert('Código incorrecto. Verifica los números ingresados.');
+            return;
+        }
+
+        currentUser = foundUser;
+        document.getElementById('displayNick').textContent = currentUser.nick;
+        document.getElementById('headerBadge').style.display = 'inline-block';
+        
+        // Limpiar campos de acceso
+        document.getElementById('loginNick').value = '';
+        pinInputs.forEach(i => i.value = '');
+
+        showView('viewMainApp');
+        renderSidebarUsers();
     });
+
+    // PUBLICAR POST O MENSAJE
+    document.getElementById('btnPublishPost').addEventListener('click', async () => {
+        const text = document.getElementById('postTextContent').value.trim();
+        const imageUrl = document.getElementById('postImageURL').value.trim();
+
+        if (!text && !imageUrl) {
+            alert('Escribe algo o agrega una URL de imagen para publicar.');
+            return;
+        }
+
+        const newPostRef = push(ref(db, 'posts'));
+        await set(newPostRef, {
+            author: currentUser.nick,
+            business: currentUser.business,
+            text: text || '',
+            image: imageUrl || '',
+            target: directTargetUser ? directTargetUser : 'General',
+            timestamp: Date.now()
+        });
+
+        document.getElementById('postTextContent').value = '';
+        document.getElementById('postImageURL').value = '';
+    });
+
+    function renderSidebarUsers() {
+        const container = document.getElementById('sidebarUserList');
+        container.innerHTML = '';
+
+        // Canal General
+        const generalItem = document.createElement('div');
+        generalItem.className = 'user-list-item';
+        generalItem.innerHTML = `<div class="status-dot" style="background:var(--primary);"></div> <strong># Canal General</strong>`;
+        generalItem.onclick = () => {
+            directTargetUser = null;
+            document.getElementById('activeChatTarget').textContent = 'Canal General';
+            document.getElementById('postTextContent').placeholder = '¿Qué deseas reportar o compartir con la red?';
+        };
+        container.appendChild(generalItem);
+
+        for (let key in users) {
+            const u = users[key];
+            if (currentUser && u.nick === currentUser.nick) continue;
+
+            const item = document.createElement('div');
+            item.className = 'user-list-item';
+            item.innerHTML = `<div class="status-dot"></div> @${u.nick} (${u.business})`;
+            item.onclick = () => {
+                directTargetUser = u.nick;
+                document.getElementById('activeChatTarget').textContent = `Directo a @${u.nick}`;
+                document.getElementById('postTextContent').placeholder = `Escribe un mensaje directo a @${u.nick}...`;
+            };
+            container.appendChild(item);
+        }
+    }
+
+    function renderFeed(postsData) {
+        const container = document.getElementById('globalFeedContainer');
+        container.innerHTML = '';
+
+        const postsArray = Object.keys(postsData).map(key => ({
+            id: key,
+            ...postsData[key]
+        })).sort((a, b) => b.timestamp - a.timestamp);
+
+        if (postsArray.length === 0) {
+            container.innerHTML = `<div style="text-align:center; color: var(--text-sub); padding: 20px;">No hay publicaciones aún. ¡Sé el primero en compartir!</div>`;
+            return;
+        }
+
+        postsArray.forEach(p => {
+            // Filtrar si es mensaje directo y no concierne al usuario actual
+            if (p.target !== 'General' && p.target !== currentUser?.nick && p.author !== currentUser?.nick) {
+                return;
+            }
+
+            const card = document.createElement('div');
+            card.className = 'post-card';
+            
+            const timeStr = new Date(p.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            let targetLabel = p.target !== 'General' ? `<span style="color:var(--warning);">[Directo a @${p.target}]</span>` : '';
+
+            card.innerHTML = `
+                <div class="post-header">
+                    <div><span class="post-author">@${p.author}</span> <span style="font-size:0.75rem; color:var(--text-sub);">(${p.business})</span> ${targetLabel}</div>
+                    <div>${timeStr}</div>
+                </div>
+                ${p.text ? `<div style="font-size: 0.9rem; line-height: 1.4; word-break: break-word;">${p.text}</div>` : ''}
+                ${p.image ? `<img src="${p.image}" class="post-image" onerror="this.style.display='none'">` : ''}
+            `;
+            container.appendChild(card);
+        });
+    }
 
     // LOGIN ADMIN
     document.getElementById('btnAdminLogin').addEventListener('click', () => {
-        const user = document.getElementById('adminUser').value.trim();
-        const pass = document.getElementById('adminPass').value.trim();
-
-        if (user === 'admin' && pass === 'ADMIN999') {
-            renderAdminTable();
+        const u = document.getElementById('adminUser').value.trim();
+        const p = document.getElementById('adminPass').value.trim();
+        if (u === 'admin' && p === '12345') {
             showView('viewAdminPanel');
+            renderAdminTable();
         } else {
             alert('Credenciales de Administrador incorrectas.');
         }
     });
 
-    // TOGGLE MODO VALIDACIÓN
-    document.getElementById('toggleValidationBtn').addEventListener('click', () => {
-        const newState = !allowAnyCode;
-        set(ref(db, 'config/allowAnyCode'), newState);
+    function renderAdminTable() {
+        const tbody = document.getElementById('adminUsersList');
+        tbody.innerHTML = '';
+        
+        for (let key in users) {
+            const u = users[key];
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${u.name} ${u.lastName}</td>
+                <td>${u.phone}</td>
+                <td>${u.business}<br><span style="color:var(--text-sub);">${u.email}</span></td>
+                <td>@${u.nick}</td>
+                <td>
+                    <span style="font-family:monospace; color:var(--primary); font-weight:bold;">${u.code}</span><br>
+                    <button class="btn btn-secondary" style="padding:2px 6px; font-size:0.7rem; margin-top:4px;" onclick="window.deleteUser('${key}')">Borrar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        }
+    }
+
+    window.deleteUser = async function(key) {
+        if (confirm('¿Estás seguro de eliminar este comerciante?')) {
+            await remove(ref(db, 'users/' + key));
+        }
+    };
+
+    const toggleBtn = document.getElementById('toggleValidationBtn');
+    toggleBtn.addEventListener('click', async () => {
+        allowAnyCode = !allowAnyCode;
+        await set(ref(db, 'config/allowAnyCode'), allowAnyCode);
     });
 
     function updateValidationUI() {
-        const text = document.getElementById('validationStatusText');
-        const btn = document.getElementById('toggleValidationBtn');
-
+        const statusText = document.getElementById('validationStatusText');
         if (allowAnyCode) {
-            text.innerText = "ACTIVADA (Acepta y guarda cualquier código)";
-            text.style.color = "var(--accent)";
-            btn.innerText = "DESACTIVAR";
-            btn.style.backgroundColor = "var(--danger)";
+            statusText.textContent = 'Modo flexible activado (Cualquier código vale)';
+            statusText.style.color = 'var(--warning)';
+            toggleBtn.textContent = 'ACTIVAR';
+            toggleBtn.style.backgroundColor = 'var(--accent)';
         } else {
-            text.innerText = "DESACTIVADA (Solo código asignado exacto)";
-            text.style.color = "var(--warning)";
-            btn.innerText = "ACTIVAR";
-            btn.style.backgroundColor = "var(--primary)";
+            statusText.textContent = 'Validación estricta por código único';
+            statusText.style.color = 'var(--accent)';
+            toggleBtn.textContent = 'DESACTIVAR';
+            toggleBtn.style.backgroundColor = 'var(--primary)';
         }
     }
 
     function logout() {
         currentUser = null;
+        directTargetUser = null;
         document.getElementById('headerBadge').style.display = 'none';
-        showView('viewLogin');
+        showView('viewRegister');
     }
-
-    function renderAdminTable() {
-        const tbody = document.getElementById('adminUsersList');
-        tbody.innerHTML = '';
-
-        for (let key in users) {
-            const u = users[key];
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><b>${u.name} ${u.lastName}</b></td>
-                <td>${u.phone}</td>
-                <td>${u.business}<br><small style="color:var(--text-sub)">${u.email}</small></td>
-                <td><span style="color:var(--primary)">@${u.nick}</span></td>
-                <td>
-                    <span class="code-pill">${u.code}</span><br>
-                    <button style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:0.7rem;" data-edit="${key}" data-code="${u.code}">✏️ Editar</button>
-                    <button style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.7rem; margin-left:4px;" data-del="${key}" data-nick="${u.nick}">🗑️ Borrar</button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        }
-
-        // Asignar eventos de editar y borrar
-        tbody.querySelectorAll('[data-edit]').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const key = e.target.getAttribute('data-edit');
-                const currentCode = e.target.getAttribute('data-code');
-                const newCode = prompt("Ingresa la nueva contraseña/código para este usuario:", currentCode);
-                if (newCode) {
-                    await update(ref(db, 'users/' + key), { code: newCode.trim() });
-                    alert("¡Contraseña actualizada en la nube!");
-                }
-            });
-        });
-
-        tbody.querySelectorAll('[data-del]').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const key = e.target.getAttribute('data-del');
-                const nick = e.target.getAttribute('data-nick');
-                if (confirm(`¿Eliminar la cuenta de @${nick}?`)) {
-                    await remove(ref(db, 'users/' + key));
-                    alert("Cuenta eliminada de la plataforma.");
-                }
-            });
-        });
-    }
-
-    // CHAT GLOBAL
-    document.getElementById('btnSendGlobal').addEventListener('click', () => {
-        const input = document.getElementById('globalMsgInput');
-        const text = input.value.trim();
-        if (!text) return;
-        const box = document.getElementById('globalChatBox');
-        box.innerHTML += `<div class="message sent"><div class="author">@${currentUser ? currentUser.nick : 'Admin'}</div>${text}</div>`;
-        box.scrollTop = box.scrollHeight;
-        input.value = '';
-    });
 </script>
+
 </body>
 </html>
