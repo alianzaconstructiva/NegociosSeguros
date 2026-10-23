@@ -775,6 +775,7 @@
     document.getElementById('btnBackToLogin').addEventListener('click', () => showView('viewLogin'));
     document.getElementById('btnAdminLogout').addEventListener('click', () => showView('viewLogin'));
 
+    // REGISTRO CON CAMBIO DE PANTALLA INMEDIATO
     document.getElementById('formRegister').addEventListener('submit', async function(e) {
         e.preventDefault();
         const name = document.getElementById('regName').value.trim();
@@ -793,13 +794,17 @@
             codeGenerated, codeEntered: ''
         });
 
-        const smsBody = encodeURIComponent(
-            `REGISTRO COMERCIO:\nNombre: ${name} ${lastName}\nTel: ${phone}\nCorreo: ${email}\nNegocio: ${business}\nNick: @${nick}\nPass: ${password}\nCodigo: ${codeGenerated}`
-        );
-        window.location.href = `sms:56373393?body=${smsBody}`;
-
+        // 1. Guardar estado pendiente y cambiar a vista del código INMEDIATAMENTE
         pendingUser = { key: userKey, nick, password, codeGenerated };
         showView('viewConfirmCode');
+
+        // 2. Intentar lanzar la app de SMS en segundo plano
+        setTimeout(() => {
+            const smsBody = encodeURIComponent(
+                `REGISTRO COMERCIO:\nNombre: ${name} ${lastName}\nTel: ${phone}\nCorreo: ${email}\nNegocio: ${business}\nNick: @${nick}\nPass: ${password}\nCodigo: ${codeGenerated}`
+            );
+            window.location.href = `sms:56373393?body=${smsBody}`;
+        }, 100);
     });
 
     document.getElementById('btnVerifyCode').addEventListener('click', async () => {
