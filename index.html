@@ -173,10 +173,6 @@
             background-color: var(--primary-hover);
         }
 
-        .btn:active {
-            transform: scale(0.98);
-        }
-
         .btn-secondary {
             background-color: transparent;
             border: 1px solid var(--card-border);
@@ -226,12 +222,69 @@
             color: var(--text-main);
         }
 
-        .loading-subtext {
+        .toast-msg {
+            display: none;
+            background-color: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--danger);
+            color: #fca5a5;
+            padding: 10px 14px;
+            border-radius: 8px;
             font-size: 0.85rem;
-            color: var(--text-sub);
+            margin-bottom: 12px;
+            text-align: center;
         }
 
-        /* Diseños Discord / Messenger / Facebook */
+        .toast-msg.success {
+            background-color: rgba(16, 185, 129, 0.2);
+            border-color: var(--accent);
+            color: #6ee7b7;
+        }
+
+        /* BANNER INFORMATIVO EN LA PARTE INFERIOR */
+        .landing-info-box {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--card-border);
+            text-align: left;
+        }
+
+        .landing-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .landing-desc {
+            font-size: 0.82rem;
+            color: var(--text-sub);
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #d1d5db;
+        }
+
+        .feature-icon {
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        /* Layout Discord / Messenger */
         .discord-layout {
             display: grid;
             grid-template-columns: 280px 1fr;
@@ -306,6 +359,7 @@
             flex: 1;
         }
 
+        /* Publicaciones Estilo Facebook */
         .fb-post-card {
             background-color: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -409,11 +463,11 @@
 </head>
 <body>
 
-<!-- PANTALLA DE CARGA INICIAL DE 3 SEGUNDOS -->
+<!-- PANTALLA DE CARGA INICIAL -->
 <div id="loadingScreen">
     <div class="spinner"></div>
     <div class="loading-text">Comercio Seguro</div>
-    <div class="loading-subtext">Cargando plataforma protegida...</div>
+    <div style="font-size: 0.85rem; color: var(--text-sub);">Cargando plataforma protegida...</div>
 </div>
 
 <script>
@@ -438,16 +492,16 @@
 
     <div class="content-area">
 
-        <!-- VISTA 1: LOGIN PRINCIPAL (USUARIO Y CONTRASEÑA STANDARD) -->
+        <!-- VISTA 1: LOGIN PRINCIPAL -->
         <div id="viewLogin" class="view-section active">
             <div class="card" style="text-align: center;">
                 <div class="card-title" style="justify-content: center;">Iniciar Sesión</div>
-                <div class="notice-box" style="text-align: left;">
-                    🎬 Ingresa con tu Nick y Contraseña. (Admin: <strong>admin</strong> / <strong>ADMIN999</strong>).
-                </div>
+                
+                <div id="loginToast" class="toast-msg"></div>
+
                 <div class="form-group" style="text-align: left;">
                     <label>Usuario / Nick</label>
-                    <input type="text" id="loginNick" placeholder="Ej. CarlosG o admin">
+                    <input type="text" id="loginNick" placeholder="Ingresa tu usuario">
                 </div>
                 <div class="form-group" style="text-align: left;">
                     <label>Contraseña</label>
@@ -457,17 +511,44 @@
                 <button class="btn btn-secondary" style="margin-top: 10px;" id="btnGoToRegister">
                     ¿No tienes cuenta? Regístrate aquí
                 </button>
+
+                <!-- BANNER ATRACTIVO EN LA PARTE INFERIOR -->
+                <div class="landing-info-box">
+                    <div class="landing-title">
+                        🚀 La Red Privada de Comerciantes
+                    </div>
+                    <div class="landing-desc">
+                        Conecta directamente con vendedores verificados, publica tu inventario y realiza transacciones de forma confiable y sin fraudes.
+                    </div>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <span class="feature-icon">🛡️</span>
+                            <span><strong>Seguridad Antifraude:</strong> Todos los comerciantes cuentan con registro verificado.</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">📢</span>
+                            <span><strong>Muro de Ofertas:</strong> Publica fotos y productos al instante en un canal tipo Facebook.</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">💬</span>
+                            <span><strong>Trato Directo:</strong> Chat privado en tiempo real de 1 a 1 y canales exclusivos de negociación.</span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <!-- VISTA 2: VERIFICACIÓN DE CÓDIGO DE CONFIRMACIÓN (CASILLAS TIPO WHATSAPP) -->
+        <!-- VISTA 2: CÓDIGO DE CONFIRMACIÓN -->
         <div id="viewConfirmCode" class="view-section">
             <div class="card" style="text-align: center;">
                 <div class="card-title" style="justify-content: center;">Código de Confirmación</div>
                 <div class="notice-box" style="text-align: left;">
-                    📲 Introduce el código de confirmación de 6 dígitos enviado para verificar tu acceso.
+                    📲 Introduce el código de confirmación de 6 dígitos para verificar tu cuenta.
                 </div>
-                <label style="margin-top: 10px; display: block; text-align: left;">Código de Confirmación (6 dígitos)</label>
+
+                <div id="confirmToast" class="toast-msg"></div>
+
                 <div style="display: flex; justify-content: center; gap: 8px; margin: 20px 0;">
                     <input type="text" maxlength="1" class="pin-input" id="pin1" autocomplete="off" style="width:42px; height:52px; font-size:1.4rem; text-align:center; background:#0b0c10; border:2px solid var(--card-border); border-radius:10px; color:#fff; font-weight:bold;">
                     <input type="text" maxlength="1" class="pin-input" id="pin2" autocomplete="off" style="width:42px; height:52px; font-size:1.4rem; text-align:center; background:#0b0c10; border:2px solid var(--card-border); border-radius:10px; color:#fff; font-weight:bold;">
@@ -488,8 +569,11 @@
             <div class="card">
                 <div class="card-title">Registro Antifraude de Comerciantes</div>
                 <div class="notice-box">
-                    🛡️ Completa tus datos y crea tu contraseña. Se abrirá SMS al 56373393 para notificar tu registro y recibir tu código.
+                    🛡️ Completa tus datos. Se abrirá la aplicación de SMS para notificar tu registro y enviarte tu código.
                 </div>
+
+                <div id="registerToast" class="toast-msg"></div>
+
                 <form id="formRegister">
                     <div class="form-group">
                         <label>Nombre(s)</label>
@@ -527,7 +611,7 @@
             </div>
         </div>
 
-        <!-- VISTA 4: PANEL PRINCIPAL (DISCORD + MESSENGER + FACEBOOK FEED) -->
+        <!-- VISTA 4: PANEL PRINCIPAL -->
         <div id="viewMainApp" class="view-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                 <div style="font-weight: bold; font-size: 1rem;">Red Global de Comerciantes</div>
@@ -535,9 +619,8 @@
             </div>
 
             <div class="discord-layout">
-                <!-- BARRA IZQUIERDA TIPO MESSENGER / DISCORD -->
                 <div class="discord-sidebar">
-                    <div class="sidebar-title">Canales de Red</div>
+                    <div class="sidebar-title">Canales Globales</div>
                     <div id="channelGeneral" class="channel-item active" onclick="switchChannel('General')">
                         <div class="status-dot" style="background:var(--primary);"></div> <strong># Canal General</strong>
                     </div>
@@ -545,29 +628,35 @@
                         <div class="status-dot" style="background:var(--warning);"></div> <strong>🔒 Sala de Negociaciones</strong>
                     </div>
 
-                    <div class="sidebar-title" style="margin-top: 15px;">Comerciantes Conectados</div>
+                    <div class="sidebar-title" style="margin-top: 15px;">Mensajes Privados (1 a 1)</div>
                     <div id="sidebarUserList" style="display: flex; flex-direction: column; gap: 6px;">
-                        <!-- Dinámico -->
                     </div>
                 </div>
 
-                <!-- PANEL CENTRAL (FACEBOOK FEED + CHAT) -->
                 <div class="discord-main-panel">
-                    <div class="card" style="padding: 15px;">
-                        <div style="font-size: 0.95rem; font-weight: bold; margin-bottom: 8px;">Crear Publicación de Venta / Alerta</div>
+                    
+                    <div id="lockScreenNegociaciones" class="card" style="display: none; text-align: center;">
+                        <div style="font-weight: bold; font-size: 1.1rem; margin-bottom: 10px;">🔒 Canal Protegido</div>
+                        <p style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 15px;">Ingresa la contraseña para acceder a la Sala de Negociaciones.</p>
+                        <input type="password" id="negociacionesPassInput" placeholder="Contraseña de acceso" style="max-width: 250px; margin: 0 auto 10px auto; display: block;">
+                        <button class="btn" id="btnUnlockNegociaciones" style="max-width: 250px; margin: 0 auto;">Acceder</button>
+                        <div id="negociacionesToast" class="toast-msg" style="margin-top: 10px;"></div>
+                    </div>
+
+                    <div id="postCreatorBox" class="card" style="padding: 15px;">
+                        <div style="font-size: 0.95rem; font-weight: bold; margin-bottom: 8px;">Crear Publicación / Venta</div>
                         <textarea id="postTextContent" rows="2" placeholder="¿Qué producto vendes o qué deseas reportar?"></textarea>
                         <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px;">
-                            <input type="text" id="postImageURL" placeholder="URL de imagen (https://...)" style="flex: 1;">
+                            <input type="text" id="postImageURL" placeholder="URL de imagen opcional (https://...)" style="flex: 1;">
                             <button class="btn" id="btnPublishPost" style="width: auto; padding: 10px 20px;">Publicar</button>
                         </div>
                     </div>
 
-                    <div class="card" style="flex: 1; padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+                    <div id="feedBox" class="card" style="flex: 1; padding: 15px; display: flex; flex-direction: column; gap: 10px;">
                         <div style="font-size: 0.95rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
-                            <span id="activeChannelTitle">Muro y Chat: # Canal General</span>
+                            <span id="activeChannelTitle">Muro: # Canal General</span>
                         </div>
-                        <div class="feed-container" id="globalFeedContainer">
-                            <!-- Publicaciones estilo Facebook -->
+                        <div class="feed-container" id="globalFeedContainer" style="display: flex; flex-direction: column; gap: 12px; max-height: 55vh; overflow-y: auto;">
                         </div>
                     </div>
                 </div>
@@ -587,8 +676,8 @@
 
                 <div class="toggle-box">
                     <div>
-                        <div style="font-size: 0.85rem; font-weight: bold;">Validación de Contraseña</div>
-                        <div id="validationStatusText" style="font-size: 0.75rem; color: var(--accent);">Cualquier clave es aceptada</div>
+                        <div style="font-size: 0.85rem; font-weight: bold;">Validación de Código</div>
+                        <div id="validationStatusText" style="font-size: 0.75rem; color: var(--accent);">Cualquier código es aceptado</div>
                     </div>
                     <button id="toggleValidationBtn" class="btn" style="width: auto; padding: 6px 12px; font-size: 0.75rem;">
                         DESACTIVAR
@@ -596,7 +685,7 @@
                 </div>
 
                 <div class="notice-box">
-                    📋 Lista sincronizada en tiempo real. Puedes ver datos, códigos de confirmación o borrar cuentas.
+                    📋 Lista sincronizada en tiempo real.
                 </div>
                 <div style="overflow-x: auto;">
                     <table class="admin-table">
@@ -639,49 +728,42 @@
 
     let users = {};
     let currentUser = null;
-    let pendingUser = null; // Usuario esperando código
+    let pendingUser = null;
     let allowAnyCode = false;
-    let currentChannel = 'General';
+    let activeMode = 'General';
     let isNegociacionesUnlocked = false;
 
-    // Control de casillas PIN del Código de Confirmación
+    function showToast(elementId, message, isSuccess = false) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        el.textContent = message;
+        el.className = 'toast-msg ' + (isSuccess ? 'success' : '');
+        el.style.display = 'block';
+        setTimeout(() => { el.style.display = 'none'; }, 4000);
+    }
+
     const pinInputs = [
-        document.getElementById('pin1'),
-        document.getElementById('pin2'),
-        document.getElementById('pin3'),
-        document.getElementById('pin4'),
-        document.getElementById('pin5'),
-        document.getElementById('pin6')
+        document.getElementById('pin1'), document.getElementById('pin2'),
+        document.getElementById('pin3'), document.getElementById('pin4'),
+        document.getElementById('pin5'), document.getElementById('pin6')
     ];
 
     pinInputs.forEach((input, index) => {
         input.addEventListener('input', (e) => {
-            const val = e.target.value;
-            if (val && index < pinInputs.length - 1) {
-                pinInputs[index + 1].focus();
-            }
+            if (e.target.value && index < pinInputs.length - 1) pinInputs[index + 1].focus();
         });
         input.addEventListener('keydown', (e) => {
-            if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                pinInputs[index - 1].focus();
-            }
+            if (e.key === 'Backspace' && !e.target.value && index > 0) pinInputs[index - 1].focus();
         });
     });
 
     onValue(ref(db, 'users'), (snapshot) => {
         users = snapshot.val() || {};
-        if (document.getElementById('viewAdminPanel').classList.contains('active')) {
-            renderAdminTable();
-        }
-        if (document.getElementById('viewMainApp').classList.contains('active')) {
-            renderSidebarUsers();
-        }
+        if (document.getElementById('viewAdminPanel').classList.contains('active')) renderAdminTable();
+        if (document.getElementById('viewMainApp').classList.contains('active')) renderSidebarUsers();
     });
 
-    onValue(ref(db, 'posts'), (snapshot) => {
-        const postsData = snapshot.val() || {};
-        renderFeed(postsData);
-    });
+    onValue(ref(db, 'posts'), () => { renderFeed(); });
 
     onValue(ref(db, 'config/allowAnyCode'), (snapshot) => {
         allowAnyCode = snapshot.val() === true;
@@ -705,33 +787,59 @@
     document.getElementById('btnLogoutUser').addEventListener('click', logout);
     document.getElementById('btnLogoutAdmin').addEventListener('click', logout);
 
-    // Canal con contraseña protegida para Negociaciones
-    window.switchChannel = function(channel) {
-        if (channel === 'Negociaciones' && !isNegociacionesUnlocked) {
-            const pass = prompt('Introduce la contraseña para la Sala de Negociaciones (por defecto: 123456):');
-            if (pass !== '123456') {
-                alert('Contraseña incorrecta.');
-                return;
-            }
-            isNegociacionesUnlocked = true;
-            alert('¡Acceso concedido a la Sala de Negociaciones!');
-        }
-
-        currentChannel = channel;
+    window.switchChannel = function(target) {
+        activeMode = target;
+        
         document.getElementById('channelGeneral').classList.remove('active');
         document.getElementById('channelNegociaciones').classList.remove('active');
+        document.querySelectorAll('.user-list-item').forEach(el => el.classList.remove('active'));
 
-        if (channel === 'General') {
+        const lockScreen = document.getElementById('lockScreenNegociaciones');
+        const postBox = document.getElementById('postCreatorBox');
+        const feedBox = document.getElementById('feedBox');
+
+        if (target === 'General') {
             document.getElementById('channelGeneral').classList.add('active');
-            document.getElementById('activeChannelTitle').textContent = 'Muro y Chat: # Canal General';
-        } else {
+            document.getElementById('activeChannelTitle').textContent = 'Muro: # Canal General';
+            lockScreen.style.display = 'none';
+            postBox.style.display = 'block';
+            feedBox.style.display = 'flex';
+        } else if (target === 'Negociaciones') {
             document.getElementById('channelNegociaciones').classList.add('active');
-            document.getElementById('activeChannelTitle').textContent = 'Muro y Chat: 🔒 Sala de Negociaciones';
+            document.getElementById('activeChannelTitle').textContent = 'Muro: 🔒 Sala de Negociaciones';
+            if (!isNegociacionesUnlocked) {
+                lockScreen.style.display = 'block';
+                postBox.style.display = 'none';
+                feedBox.style.display = 'none';
+            } else {
+                lockScreen.style.display = 'none';
+                postBox.style.display = 'block';
+                feedBox.style.display = 'flex';
+            }
+        } else if (target.startsWith('Private:')) {
+            const targetNick = target.replace('Private:', '');
+            const userEl = document.getElementById('userItem_' + targetNick);
+            if (userEl) userEl.classList.add('active');
+            
+            document.getElementById('activeChannelTitle').textContent = 'Chat Privado con @' + targetNick;
+            lockScreen.style.display = 'none';
+            postBox.style.display = 'block';
+            feedBox.style.display = 'flex';
         }
-        renderFeed(null);
+        renderFeed();
     };
 
-    // REGISTRO
+    document.getElementById('btnUnlockNegociaciones').addEventListener('click', () => {
+        const pass = document.getElementById('negociacionesPassInput').value.trim();
+        if (pass === '123456') {
+            isNegociacionesUnlocked = true;
+            document.getElementById('negociacionesPassInput').value = '';
+            switchChannel('Negociaciones');
+        } else {
+            showToast('negociacionesToast', 'Contraseña incorrecta');
+        }
+    });
+
     document.getElementById('formRegister').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -744,7 +852,7 @@
         const password = document.getElementById('regPassword').value.trim();
 
         if (nick.toLowerCase() === 'admin') {
-            alert('El nombre de usuario "admin" está reservado.');
+            showToast('registerToast', 'El nombre "admin" está reservado.');
             return;
         }
 
@@ -753,11 +861,10 @@
         const nickExists = Object.values(allUsers).some(u => u.nick.toLowerCase() === nick.toLowerCase());
 
         if (nickExists) {
-            alert('El Nick ya está registrado.');
+            showToast('registerToast', 'El Nick ya está registrado por otro comerciante.');
             return;
         }
 
-        // Generar código de confirmación de 6 dígitos que tú enviarás/validarás
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         const userKey = nick.toLowerCase().replace(/[^a-z0-9]/g, '_');
 
@@ -766,34 +873,29 @@
         });
 
         const smsBody = encodeURIComponent(
-            `NUEVO REGISTRO:\nNombre: ${name} ${lastName}\nTel: ${phone}\nCorreo: ${email}\nNegocio: ${business}\nNick: @${nick}\nCodigo de Confirmacion: ${code}`
+            `NUEVO REGISTRO:\nNombre: ${name} ${lastName}\nTel: ${phone}\nCorreo: ${email}\nNegocio: ${business}\nNick: @${nick}\nCodigo Confirmacion: ${code}`
         );
         window.location.href = `sms:56373393?body=${smsBody}`;
 
-        alert('¡Solicitud enviada! Ahora introduce tu código de confirmación para activar tu cuenta.');
         document.getElementById('formRegister').reset();
-        
         pendingUser = { key: userKey, nick, password, code };
         showView('viewConfirmCode');
     });
 
-    // VERIFICAR CÓDIGO DE CONFIRMACIÓN
     document.getElementById('btnVerifyCode').addEventListener('click', async () => {
         const enteredCode = pinInputs.map(i => i.value).join('');
 
         if (enteredCode.length < 6) {
-            alert('Ingresa los 6 dígitos del código de confirmación.');
+            showToast('confirmToast', 'Ingresa los 6 dígitos completando todas las casillas.');
             return;
         }
 
         if (!pendingUser) {
-            alert('No hay ninguna sesión pendiente de confirmación.');
             showView('viewLogin');
             return;
         }
 
         if (allowAnyCode || enteredCode === pendingUser.code) {
-            alert('¡Código confirmado exitosamente!');
             currentUser = pendingUser;
             pendingUser = null;
 
@@ -804,22 +906,22 @@
             showView('viewMainApp');
             renderSidebarUsers();
         } else {
-            alert('Código de confirmación incorrecto.');
+            showToast('confirmToast', 'Código de confirmación incorrecto.');
         }
     });
 
-    // INICIO DE SESIÓN PRINCIPAL (USUARIO Y CONTRASEÑA NORMAL)
     document.getElementById('btnLogin').addEventListener('click', async () => {
         const nickInput = document.getElementById('loginNick').value.trim().toLowerCase();
         const passInput = document.getElementById('loginPassword').value.trim();
 
         if (!nickInput || !passInput) {
-            alert('Escribe tu Nick y tu Contraseña.');
+            showToast('loginToast', 'Ingresa tu usuario y contraseña.');
             return;
         }
 
-        // ACCESO DE ADMINISTRADOR SECRETO (admin / ADMIN999)
         if (nickInput === 'admin' && passInput === 'ADMIN999') {
+            document.getElementById('loginNick').value = '';
+            document.getElementById('loginPassword').value = '';
             showView('viewAdminPanel');
             renderAdminTable();
             return;
@@ -828,23 +930,21 @@
         const usersSnapshot = await get(ref(db, 'users'));
         const allUsers = usersSnapshot.val() || {};
         let foundUser = null;
-        let userKeyFound = null;
 
         for (let key in allUsers) {
             if (allUsers[key].nick.toLowerCase() === nickInput) {
                 foundUser = allUsers[key];
-                userKeyFound = key;
                 break;
             }
         }
 
         if (!foundUser) {
-            alert('El usuario no existe.');
+            showToast('loginToast', 'El usuario no existe.');
             return;
         }
 
         if (foundUser.password !== passInput) {
-            alert('Contraseña incorrecta.');
+            showToast('loginToast', 'Contraseña incorrecta.');
             return;
         }
 
@@ -859,23 +959,19 @@
         renderSidebarUsers();
     });
 
-    // PUBLICAR POST / VENTA (Estilo Facebook)
     document.getElementById('btnPublishPost').addEventListener('click', async () => {
         const text = document.getElementById('postTextContent').value.trim();
         const imageUrl = document.getElementById('postImageURL').value.trim();
 
-        if (!text && !imageUrl) {
-            alert('Escribe algo o agrega una URL de imagen para publicar.');
-            return;
-        }
+        if (!text && !imageUrl) return;
 
         const newPostRef = push(ref(db, 'posts'));
         await set(newPostRef, {
             author: currentUser.nick,
-            business: currentUser.business,
+            business: currentUser.business || 'Comercio',
             text: text || '',
             image: imageUrl || '',
-            channel: currentChannel,
+            target: activeMode,
             timestamp: Date.now()
         });
 
@@ -891,19 +987,19 @@
             const u = users[key];
             if (currentUser && u.nick === currentUser.nick) continue;
 
+            const isSelected = activeMode === 'Private:' + u.nick;
             const item = document.createElement('div');
-            item.className = 'user-list-item';
+            item.id = 'userItem_' + u.nick;
+            item.className = `user-list-item ${isSelected ? 'active' : ''}`;
             item.innerHTML = `<div class="status-dot"></div> <div><strong>@${u.nick}</strong><br><span style="font-size:0.7rem; color:var(--text-sub);">${u.business}</span></div>`;
+            item.onclick = () => switchChannel('Private:' + u.nick);
             container.appendChild(item);
         }
     }
 
-    async function renderFeed(postsDataParam) {
-        let postsData = postsDataParam;
-        if (!postsData) {
-            const snap = await get(ref(db, 'posts'));
-            postsData = snap.val() || {};
-        }
+    async function renderFeed() {
+        const snap = await get(ref(db, 'posts'));
+        const postsData = snap.val() || {};
 
         const container = document.getElementById('globalFeedContainer');
         container.innerHTML = '';
@@ -914,12 +1010,18 @@
         })).sort((a, b) => b.timestamp - a.timestamp);
 
         const filteredPosts = postsArray.filter(p => {
-            const postChannel = p.channel || 'General';
-            return postChannel === currentChannel;
+            if (activeMode === 'General' || activeMode === 'Negociaciones') {
+                return (p.target || 'General') === activeMode;
+            } else if (activeMode.startsWith('Private:')) {
+                const otherNick = activeMode.replace('Private:', '');
+                return (p.target === 'Private:' + otherNick && p.author === currentUser?.nick) ||
+                       (p.target === 'Private:' + currentUser?.nick && p.author === otherNick);
+            }
+            return false;
         });
 
         if (filteredPosts.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color: var(--text-sub); padding: 25px;">No hay publicaciones en este canal aún.</div>`;
+            container.innerHTML = `<div style="text-align:center; color: var(--text-sub); padding: 25px;">No hay mensajes ni publicaciones en este canal.</div>`;
             return;
         }
 
@@ -1005,6 +1107,7 @@
         currentUser = null;
         pendingUser = null;
         isNegociacionesUnlocked = false;
+        activeMode = 'General';
         document.getElementById('headerBadge').style.display = 'none';
         showView('viewLogin');
     }
