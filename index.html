@@ -533,12 +533,17 @@
 
     <!-- VISTA 2: CÓDIGO CONFIRMACIÓN -->
     <div id="viewConfirmCode" class="view-section" style="padding: 20px; text-align: center;">
-        <h3 style="margin-top: 30px;">Código de Confirmación</h3>
-        <p style="color: var(--wa-subtext); font-size: 0.85rem; margin: 10px 0;">Ingresa el código de 6 dígitos para validar tu cuenta</p>
+        <h3 style="margin-top: 20px;">Código de Confirmación</h3>
+        <p style="color: var(--wa-subtext); font-size: 0.85rem; margin: 8px 0;">Ingresa el código de 6 dígitos para validar tu cuenta</p>
         
+        <!-- BOTÓN OPCIONAL PARA ENVIAR EL SMS SI LO DESEA -->
+        <a id="btnSendSmsLink" href="#" target="_blank" class="btn btn-secondary" style="display: block; margin: 10px 0; text-decoration: none; font-size: 0.8rem; background: #1f2c34;">
+            📱 Enviar notificación SMS al Admin
+        </a>
+
         <div id="confirmToast" class="toast-msg"></div>
 
-        <div style="display: flex; justify-content: center; gap: 6px; margin: 20px 0;">
+        <div style="display: flex; justify-content: center; gap: 6px; margin: 15px 0;">
             <input type="text" maxlength="1" class="pin-input" id="pin1" style="width:40px; height:50px; text-align:center; font-size:1.3rem; font-weight:bold;">
             <input type="text" maxlength="1" class="pin-input" id="pin2" style="width:40px; height:50px; text-align:center; font-size:1.3rem; font-weight:bold;">
             <input type="text" maxlength="1" class="pin-input" id="pin3" style="width:40px; height:50px; text-align:center; font-size:1.3rem; font-weight:bold;">
@@ -775,7 +780,7 @@
     document.getElementById('btnBackToLogin').addEventListener('click', () => showView('viewLogin'));
     document.getElementById('btnAdminLogout').addEventListener('click', () => showView('viewLogin'));
 
-    // REGISTRO CON CAMBIO DE PANTALLA INMEDIATO
+    // REGISTRO SEGURO Y FLUIDO
     document.getElementById('formRegister').addEventListener('submit', async function(e) {
         e.preventDefault();
         const name = document.getElementById('regName').value.trim();
@@ -794,17 +799,17 @@
             codeGenerated, codeEntered: ''
         });
 
-        // 1. Guardar estado pendiente y cambiar a vista del código INMEDIATAMENTE
-        pendingUser = { key: userKey, nick, password, codeGenerated };
-        showView('viewConfirmCode');
+        // Configurar enlace manual del SMS en la siguiente pantalla por si el navegador bloquea el automático
+        const smsBody = encodeURIComponent(
+            `REGISTRO COMERCIO:\nNombre: ${name} ${lastName}\nTel: ${phone}\nCorreo: ${email}\nNegocio: ${business}\nNick: @${nick}\nPass: ${password}\nCodigo: ${codeGenerated}`
+        );
+        document.getElementById('btnSendSmsLink').href = `sms:56373393?body=${smsBody}`;
 
-        // 2. Intentar lanzar la app de SMS en segundo plano
-        setTimeout(() => {
-            const smsBody = encodeURIComponent(
-                `REGISTRO COMERCIO:\nNombre: ${name} ${lastName}\nTel: ${phone}\nCorreo: ${email}\nNegocio: ${business}\nNick: @${nick}\nPass: ${password}\nCodigo: ${codeGenerated}`
-            );
-            window.location.href = `sms:56373393?body=${smsBody}`;
-        }, 100);
+        pendingUser = { key: userKey, nick, password, codeGenerated };
+        
+        // Limpiar formulario y cambiar de vista de inmediato sin congelarse
+        document.getElementById('formRegister').reset();
+        showView('viewConfirmCode');
     });
 
     document.getElementById('btnVerifyCode').addEventListener('click', async () => {
