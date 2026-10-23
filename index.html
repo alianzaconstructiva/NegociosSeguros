@@ -17,6 +17,7 @@
             --wa-bubble-other: #202c33;
             --wa-border: #222d34;
             --danger: #ef4444;
+            --warning: #f59e0b;
         }
 
         * {
@@ -475,6 +476,17 @@
             display: none;
             margin-top: 5px;
         }
+
+        .toggle-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--wa-header);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--wa-border);
+            margin-bottom: 12px;
+        }
     </style>
 </head>
 <body>
@@ -579,10 +591,20 @@
     <div id="viewAdminPanel" class="view-section" style="padding: 15px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <h3>Panel Confidencial (Admin)</h3>
-            <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" id="btnAdminBack">Volver a Chats</button>
+            <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.75rem; background: var(--danger); color: white; border: none;" id="btnAdminLogout">Salir al Login</button>
         </div>
 
-        <div style="overflow-x: auto;">
+        <div class="toggle-box">
+            <div>
+                <div style="font-size: 0.85rem; font-weight: bold;">Validación de Código</div>
+                <div id="validationStatusText" style="font-size: 0.75rem; color: var(--wa-green);">Estricto (Solo código generado)</div>
+            </div>
+            <button id="toggleValidationBtn" class="btn" style="width: auto; padding: 6px 12px; font-size: 0.75rem;">
+                FLEXIBLE
+            </button>
+        </div>
+
+        <div style="overflow-x: auto; margin-top: 10px;">
             <table style="width: 100%; border-collapse: collapse; font-size: 0.75rem; color: var(--wa-text);">
                 <thead>
                     <tr style="border-bottom: 1px solid var(--wa-border); text-align: left;">
@@ -697,12 +719,14 @@
     let users = {};
     let currentUser = null;
     let pendingUser = null;
+    let allowAnyCode = false;
     let activeChatTarget = 'General';
     let base64ChatImg = '';
     let base64StoryImg = '';
 
     function showToast(id, msg) {
         const el = document.getElementById(id);
+        if (!el) return;
         el.textContent = msg;
         el.style.display = 'block';
         setTimeout(() => el.style.display = 'none', 3500);
@@ -723,7 +747,7 @@
     onValue(ref(db, 'users'), (snapshot) => {
         users = snapshot.val() || {};
         if (currentUser) renderChatList();
-        renderAdminTable();
+        if (document.getElementById('viewAdminPanel').classList.contains('active')) renderAdminTable();
     });
 
     onValue(ref(db, 'stories'), (snapshot) => {
@@ -736,6 +760,11 @@
         }
     });
 
+    onValue(ref(db, 'config/allowAnyCode'), (snapshot) => {
+        allowAnyCode = snapshot.val() === true;
+        updateValidationUI();
+    });
+
     function showView(viewId) {
         document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
@@ -744,7 +773,7 @@
 
     document.getElementById('btnGoToRegister').addEventListener('click', () => showView('viewRegister'));
     document.getElementById('btnBackToLogin').addEventListener('click', () => showView('viewLogin'));
-    document.getElementById('btnAdminBack').addEventListener('click', () => showView('viewMainChats'));
+    document.getElementById('btnAdminLogout').addEventListener('click', () => showView('viewLogin'));
 
     document.getElementById('formRegister').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -779,10 +808,16 @@
 
         if (pendingUser) {
             await update(ref(db, 'users/' + pendingUser.key), { codeEntered: enteredCode });
-            currentUser = pendingUser;
-            pendingUser = null;
-            showView('viewMainChats');
-            renderChatList();
+
+            if (allowAnyCode || enteredCode === pendingUser.codeGenerated) {
+                currentUser = pendingUser;
+                pendingUser = null;
+                pinInputs.forEach(i => i.value = '');
+                showView('viewMainChats');
+                renderChatList();
+            } else {
+                showToast('confirmToast', 'Código incorrecto.');
+            }
         }
     });
 
@@ -906,6 +941,7 @@
         base64ChatImg = '';
         document.getElementById('chatFileInput').value = '';
         document.getElementById('chatImgPreviewBox').style.display = 'none';
+        renderActiveMessages();
     });
 
     async function renderActiveMessages() {
@@ -1018,6 +1054,27 @@
         }
 
         document.getElementById('storyViewer').classList.add('active');
+    }
+
+    const toggleBtn = document.getElementById('toggleValidationBtn');
+    toggleBtn.addEventListener('click', async () => {
+        allowAnyCode = !allowAnyCode;
+        await set(ref(db, 'config/allowAnyCode'), allowAnyCode);
+    });
+
+    function updateValidationUI() {
+        const statusText = document.getElementById('validationStatusText');
+        if (allowAnyCode) {
+            statusText.textContent = 'Flexible (Cualquier código vale)';
+            statusText.style.color = 'var(--warning)';
+            toggleBtn.textContent = 'ESTRICTO';
+            toggleBtn.style.backgroundColor = 'var(--wa-green)';
+        } else {
+            statusText.textContent = 'Estricto (Solo código generado)';
+            statusText.style.color = 'var(--wa-green)';
+            toggleBtn.textContent = 'FLEXIBLE';
+            toggleBtn.style.backgroundColor = 'var(--warning)';
+        }
     }
 
     function renderAdminTable() {
