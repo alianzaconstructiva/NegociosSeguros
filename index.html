@@ -534,10 +534,10 @@
         <button class="btn btn-secondary" style="margin-top: 10px;" id="btnGoToRegister">Registrar mi Negocio</button>
     </div>
 
-    <!-- VISTA 2: CÓDIGO CONFIRMACIÓN CON CONTADOR REGRESIVO -->
+    <!-- VISTA 2: CÓDIGO CONFIRMACIÓN CON CONTADOR REGRESIVO Y BOTÓN SEGURO DE SMS -->
     <div id="viewConfirmCode" class="view-section" style="padding: 20px; text-align: center;">
         <h3 style="margin-top: 15px;">Código de Confirmación</h3>
-        <p style="color: var(--wa-subtext); font-size: 0.85rem; margin: 6px 0;">Envía el mensaje SMS con tus datos al administrador y espera el código:</p>
+        <p style="color: var(--wa-subtext); font-size: 0.85rem; margin: 6px 0;">Presiona el botón para enviar el SMS con tus datos al administrador:</p>
         
         <a id="btnSendSmsLink" href="#" class="btn" style="background: var(--wa-green); margin: 10px 0; font-size: 0.95rem;">
             📤 Enviar Mensaje SMS al Admin
@@ -807,6 +807,7 @@
         }, 1000);
     }
 
+    // REGISTRO SEGURO SIN BLOQUEOS
     document.getElementById('formRegister').addEventListener('submit', async function(e) {
         e.preventDefault();
         const name = document.getElementById('regName').value.trim();
