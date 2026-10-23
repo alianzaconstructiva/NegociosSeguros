@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comercio Seguro - Red de Comerciantes</title>
+    <title>Comercio Seguro - WhatsApp Business Red</title>
     <style>
         :root {
-            --bg-dark: #0f1015;
-            --card-bg: #181b22;
-            --card-border: #262c38;
-            --primary: #e50914;
-            --primary-hover: #b20710;
-            --accent: #10b981;
-            --text-main: #ffffff;
-            --text-sub: #8c939d;
+            --wa-bg: #0b141a;
+            --wa-card: #111b21;
+            --wa-header: #202c33;
+            --wa-green: #00a884;
+            --wa-green-dark: #008069;
+            --wa-text: #e9edef;
+            --wa-subtext: #8696a0;
+            --wa-bubble-me: #005c4b;
+            --wa-bubble-other: #202c33;
+            --wa-border: #222d34;
             --danger: #ef4444;
-            --warning: #f59e0b;
         }
 
         * {
@@ -26,200 +27,437 @@
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
+            background-color: #000000;
+            color: var(--wa-text);
             display: flex;
             justify-content: center;
             min-height: 100vh;
             overflow-x: hidden;
-            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)), url('https://assets.nflxext.com/ffe/siteui/vlv3/efb4855d-e702-43e5-9997-bbaad1541c4b/4c2fed47-81b8-4f47-b53d-2491a92e4282/ES-es-20230417-popsignuptwoweeks-perspective_alpha_website_small.jpg');
-            background-size: cover;
-            background-position: center;
         }
 
         .app-container {
             width: 100%;
             max-width: 480px;
-            background-color: rgba(15, 16, 21, 0.95);
+            background-color: var(--wa-bg);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             position: relative;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px);
-            overflow-x: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            overflow: hidden;
         }
 
-        .app-container.chat-active {
-            max-width: 1100px;
-        }
-
+        /* HEADER TIPO WHATSAPP */
         header {
-            padding: 15px;
-            background-color: var(--card-bg);
-            border-bottom: 1px solid var(--card-border);
+            padding: 12px 16px;
+            background-color: var(--wa-header);
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
-            z-index: 10;
+            z-index: 20;
+            border-bottom: 1px solid var(--wa-border);
         }
 
-        .brand-title {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--text-main);
-            letter-spacing: 0.5px;
+        .wa-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--wa-text);
         }
 
-        .brand-title span {
-            color: var(--primary);
-        }
-
-        .user-badge {
-            font-size: 0.8rem;
-            padding: 4px 10px;
-            border-radius: 20px;
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--accent);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .content-area {
-            padding: 15px;
-            flex: 1;
+        .wa-actions {
             display: flex;
-            flex-direction: column;
             gap: 15px;
-            width: 100%;
+            align-items: center;
+        }
+
+        .wa-icon-btn {
+            background: none;
+            border: none;
+            color: var(--wa-subtext);
+            font-size: 1.2rem;
+            cursor: pointer;
         }
 
         .view-section {
             display: none;
             flex-direction: column;
-            gap: 15px;
+            flex: 1;
             width: 100%;
+            padding-bottom: 65px; /* Espacio para barra inferior */
         }
 
         .view-section.active {
             display: flex;
         }
 
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 20px;
+        /* NAVEGACIÓN INFERIOR ESTILO WHATSAPP */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
             width: 100%;
-            box-sizing: border-box;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            max-width: 480px;
+            background-color: var(--wa-header);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid var(--wa-border);
+            z-index: 30;
         }
 
-        .card-title {
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            color: var(--wa-subtext);
+            font-size: 0.75rem;
+            cursor: pointer;
+            width: 25%;
+        }
+
+        .nav-item.active {
+            color: var(--wa-green);
+        }
+
+        .nav-icon {
             font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: var(--text-main);
+        }
+
+        /* HISTORIAS / ESTADOS DE WHATSAPP */
+        .stories-container {
+            padding: 12px;
+            background-color: var(--wa-card);
+            border-bottom: 1px solid var(--wa-border);
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .story-circle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            width: 65px;
+            flex-shrink: 0;
+        }
+
+        .avatar-ring {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            padding: 2px;
+            border: 2px solid var(--wa-green);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .avatar-ring.add {
+            border: 2px dashed var(--wa-subtext);
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #2a3942;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #fff;
+            font-size: 1.1rem;
+            object-fit: cover;
+        }
+
+        .add-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: var(--wa-green);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .story-name {
+            font-size: 0.7rem;
+            color: var(--wa-subtext);
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        /* LISTA DE CHATS ESTILO WHATSAPP */
+        .chat-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            cursor: pointer;
+        }
+
+        .chat-item:active {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .chat-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .chat-header-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .form-group {
-            margin-bottom: 14px;
+        .chat-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--wa-text);
+        }
+
+        .chat-time {
+            font-size: 0.75rem;
+            color: var(--wa-subtext);
+        }
+
+        .chat-msg-preview {
+            font-size: 0.85rem;
+            color: var(--wa-subtext);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* PANTALLA DE CONVERSACIÓN / CHAT ACTIVO */
+        .chat-window {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            background-color: var(--wa-bg);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+        }
+
+        .chat-window.active {
+            display: flex;
+        }
+
+        .chat-window-header {
+            padding: 10px 14px;
+            background-color: var(--wa-header);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--wa-border);
+        }
+
+        .chat-messages-area {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
+            background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 0);
+            background-size: 16px 16px;
         }
 
-        label {
-            font-size: 0.85rem;
-            color: var(--text-sub);
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 12px 14px;
+        .msg-bubble {
+            max-width: 75%;
+            padding: 8px 12px;
             border-radius: 8px;
-            border: 1px solid var(--card-border);
-            background-color: #0b0c10;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            outline: none;
-            box-sizing: border-box;
-            transition: border-color 0.2s;
+            font-size: 0.9rem;
+            line-height: 1.3;
+            position: relative;
+            word-break: break-word;
         }
 
-        input:focus, textarea:focus {
-            border-color: var(--primary);
+        .msg-bubble.me {
+            align-self: flex-end;
+            background-color: var(--wa-bubble-me);
+            color: #fff;
+            border-top-right-radius: 0;
         }
 
-        .btn {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
+        .msg-bubble.other {
+            align-self: flex-start;
+            background-color: var(--wa-bubble-other);
+            color: #fff;
+            border-top-left-radius: 0;
+        }
+
+        .msg-time {
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.6);
+            text-align: right;
+            margin-top: 3px;
+        }
+
+        .chat-input-bar {
+            padding: 8px 10px;
+            background-color: var(--wa-header);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-input-bar input {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 20px;
             border: none;
-            background-color: var(--primary);
+            background-color: #2a3942;
+            color: #fff;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--wa-green);
+            border: none;
             color: white;
-            font-weight: 600;
-            font-size: 0.95rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            text-align: center;
         }
 
-        .btn:hover {
-            background-color: var(--primary-hover);
+        /* MODAL DE SUBIR HISTORIA */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0,0,0,0.85);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
         }
 
-        .btn-secondary {
-            background-color: transparent;
-            border: 1px solid var(--card-border);
-            color: var(--text-sub);
+        .modal-card {
+            background-color: var(--wa-card);
+            border: 1px solid var(--wa-border);
+            border-radius: 12px;
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .btn-secondary:hover {
-            background-color: rgba(255,255,255,0.05);
-            color: var(--text-main);
+        /* VISOR DE HISTORIAS EN PANTALLA COMPLETA */
+        .story-viewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            z-index: 300;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
         }
 
-        /* Pantalla de Carga Inicial */
+        .story-viewer.active {
+            display: flex;
+        }
+
+        /* PANTALLA DE CARGA INICIAL */
         #loadingScreen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(15, 16, 21, 0.98);
-            backdrop-filter: blur(15px);
-            z-index: 999999;
+            background-color: #0b141a;
+            z-index: 99999;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             gap: 20px;
-            transition: opacity 0.5s ease-out;
         }
 
         .spinner {
-            width: 70px;
-            height: 70px;
-            border: 6px solid rgba(229, 9, 20, 0.2);
-            border-top: 6px solid var(--primary);
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(0, 168, 132, 0.2);
+            border-top: 5px solid var(--wa-green);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
         }
 
-        .loading-text {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-main);
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--wa-border);
+            background-color: #111b21;
+            color: #fff;
+            outline: none;
+        }
+
+        .btn {
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background-color: var(--wa-green);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid var(--wa-border);
+            color: var(--wa-subtext);
         }
 
         .toast-msg {
@@ -227,488 +465,204 @@
             background-color: rgba(239, 68, 68, 0.2);
             border: 1px solid var(--danger);
             color: #fca5a5;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            margin-bottom: 12px;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
             text-align: center;
-        }
-
-        .toast-msg.success {
-            background-color: rgba(16, 185, 129, 0.2);
-            border-color: var(--accent);
-            color: #6ee7b7;
-        }
-
-        /* BANNER INFORMATIVO EN LA PARTE INFERIOR */
-        .landing-info-box {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--card-border);
-            text-align: left;
-        }
-
-        .landing-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .landing-desc {
-            font-size: 0.82rem;
-            color: var(--text-sub);
-            line-height: 1.4;
-            margin-bottom: 12px;
-        }
-
-        .feature-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            font-size: 0.8rem;
-            color: #d1d5db;
-        }
-
-        .feature-icon {
-            color: var(--primary);
-            font-size: 0.9rem;
-        }
-
-        /* Layout Discord / Messenger */
-        .discord-layout {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 15px;
-            flex: 1;
-            width: 100%;
-            min-height: 75vh;
-        }
-
-        @media (max-width: 768px) {
-            .discord-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .discord-sidebar {
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .sidebar-title {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-sub);
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .channel-item, .user-list-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            border-radius: 8px;
-            background: #0b0c10;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 1px solid transparent;
-        }
-
-        .channel-item:hover, .user-list-item:hover {
-            background: rgba(255,255,255,0.08);
-            border-color: var(--card-border);
-        }
-
-        .channel-item.active, .user-list-item.active {
-            background: rgba(229, 9, 20, 0.15);
-            border-color: var(--primary);
-        }
-
-        .status-dot {
-            width: 9px;
-            height: 9px;
-            background-color: var(--accent);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--accent);
-        }
-
-        .discord-main-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            flex: 1;
-        }
-
-        /* Publicaciones Estilo Facebook */
-        .fb-post-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .fb-post-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .fb-avatar {
-            width: 40px;
-            height: 40px;
-            background-color: var(--primary);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            font-size: 1rem;
-        }
-
-        .fb-user-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .fb-author {
-            font-weight: bold;
-            color: var(--text-main);
-            font-size: 0.95rem;
-        }
-
-        .fb-time {
-            font-size: 0.75rem;
-            color: var(--text-sub);
-        }
-
-        .fb-content {
-            font-size: 0.95rem;
-            line-height: 1.5;
-            word-break: break-word;
-            color: #e2e8f0;
-        }
-
-        .fb-image {
-            width: 100%;
-            max-height: 320px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-top: 5px;
-        }
-
-        .notice-box {
-            background-color: rgba(229, 9, 20, 0.1);
-            border: 1px solid rgba(229, 9, 20, 0.3);
-            color: #ffb4b4;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.75rem;
-            margin-top: 10px;
-        }
-
-        .admin-table th, .admin-table td {
-            border: 1px solid var(--card-border);
-            padding: 8px 6px;
-            text-align: left;
-        }
-
-        .admin-table th {
-            background-color: #0b0c10;
-            color: var(--text-sub);
-        }
-
-        .toggle-box {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #0b0c10;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--card-border);
-            margin-bottom: 12px;
         }
     </style>
 </head>
 <body>
 
-<!-- PANTALLA DE CARGA INICIAL -->
 <div id="loadingScreen">
     <div class="spinner"></div>
-    <div class="loading-text">Comercio Seguro</div>
-    <div style="font-size: 0.85rem; color: var(--text-sub);">Cargando plataforma protegida...</div>
+    <div style="font-size: 1.2rem; font-weight: bold; color: var(--wa-green);">WhatsApp Comercio</div>
+    <div style="font-size: 0.85rem; color: var(--wa-subtext);">Cargando red de vendedores...</div>
 </div>
 
 <script>
     setTimeout(function() {
         var loader = document.getElementById('loadingScreen');
-        if (loader) {
-            loader.style.opacity = '0';
-            setTimeout(function() { loader.remove(); }, 500);
-        }
-    }, 3000);
+        if (loader) loader.remove();
+    }, 2500);
 </script>
 
-<div id="appContainer" class="app-container">
+<div class="app-container">
     <header>
-        <div class="brand-title">
-            Comercio<span>Seguro</span>
-        </div>
-        <div id="headerBadge" class="user-badge" style="display: none;">
-            @<span id="displayNick">invitado</span>
+        <div class="wa-title" id="appHeaderTitle">WhatsApp</div>
+        <div class="wa-actions">
+            <button class="wa-icon-btn" id="btnOpenAdmin" title="Admin">⚙️</button>
+            <button class="wa-icon-btn" id="btnLogout" title="Salir">🚪</button>
         </div>
     </header>
 
-    <div class="content-area">
-
-        <!-- VISTA 1: LOGIN PRINCIPAL -->
-        <div id="viewLogin" class="view-section active">
-            <div class="card" style="text-align: center;">
-                <div class="card-title" style="justify-content: center;">Iniciar Sesión</div>
-                
-                <div id="loginToast" class="toast-msg"></div>
-
-                <div class="form-group" style="text-align: left;">
-                    <label>Usuario / Nick</label>
-                    <input type="text" id="loginNick" placeholder="Ingresa tu usuario">
-                </div>
-                <div class="form-group" style="text-align: left;">
-                    <label>Contraseña</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••">
-                </div>
-                <button class="btn" id="btnLogin" style="margin-top: 10px;">Ingresar a la Plataforma</button>
-                <button class="btn btn-secondary" style="margin-top: 10px;" id="btnGoToRegister">
-                    ¿No tienes cuenta? Regístrate aquí
-                </button>
-
-                <!-- BANNER ATRACTIVO EN LA PARTE INFERIOR -->
-                <div class="landing-info-box">
-                    <div class="landing-title">
-                        🚀 La Red Privada de Comerciantes
-                    </div>
-                    <div class="landing-desc">
-                        Conecta directamente con vendedores verificados, publica tu inventario y realiza transacciones de forma confiable y sin fraudes.
-                    </div>
-                    <div class="feature-list">
-                        <div class="feature-item">
-                            <span class="feature-icon">🛡️</span>
-                            <span><strong>Seguridad Antifraude:</strong> Todos los comerciantes cuentan con registro verificado.</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-icon">📢</span>
-                            <span><strong>Muro de Ofertas:</strong> Publica fotos y productos al instante en un canal tipo Facebook.</span>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-icon">💬</span>
-                            <span><strong>Trato Directo:</strong> Chat privado en tiempo real de 1 a 1 y canales exclusivos de negociación.</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+    <!-- VISTA 1: LOGIN -->
+    <div id="viewLogin" class="view-section active" style="padding: 20px;">
+        <div style="text-align: center; margin-bottom: 20px; margin-top: 30px;">
+            <div style="font-size: 3rem;">💬</div>
+            <h2 style="margin-top: 10px;">Ingresar a WhatsApp Red</h2>
+            <p style="color: var(--wa-subtext); font-size: 0.85rem; margin-top: 5px;">Plataforma de ventas directas entre comerciantes</p>
         </div>
 
-        <!-- VISTA 2: CÓDIGO DE CONFIRMACIÓN -->
-        <div id="viewConfirmCode" class="view-section">
-            <div class="card" style="text-align: center;">
-                <div class="card-title" style="justify-content: center;">Código de Confirmación</div>
-                <div class="notice-box" style="text-align: left;">
-                    📲 Introduce el código de confirmación de 6 dígitos para verificar tu cuenta.
-                </div>
+        <div id="loginToast" class="toast-msg"></div>
 
-                <div id="confirmToast" class="toast-msg"></div>
+        <div class="form-group">
+            <label style="font-size: 0.8rem; color: var(--wa-subtext);">Usuario / Nick</label>
+            <input type="text" id="loginNick" placeholder="Ej. CarlosG">
+        </div>
+        <div class="form-group">
+            <label style="font-size: 0.8rem; color: var(--wa-subtext);">Contraseña</label>
+            <input type="password" id="loginPassword" placeholder="••••••••">
+        </div>
+        <button class="btn" id="btnLogin" style="margin-top: 10px;">Ingresar</button>
+        <button class="btn btn-secondary" style="margin-top: 10px;" id="btnGoToRegister">Registrar mi Negocio</button>
+    </div>
 
-                <div style="display: flex; justify-content: center; gap: 8px; margin: 20px 0;">
-                    <input type="text" maxlength="1" class="pin-input" id="pin1" autocomplete="off" style="width:42px; height:52px; font-size:1.4rem; text-align:center; background:#0b0c10; border:2px solid var(--card-border); border-radius:10px; color:#fff; font-weight:bold;">
-                    <input type="text" maxlength="1" class="pin-input" id="pin2" autocomplete="off" style="width:42px; height:52px; font-size:1.4rem; text-align:center; background:#0b0c10; border:2px solid var(--card-border); border-radius:10px; color:#fff; font-weight:bold;">
-                    <input type="text" maxlength="1" class="pin-input" id="pin3" autocomplete="off" style="width:42px; height:52px; font-size:1.4rem; text-align:center; background:#0b0c10; border:2px solid var(--card-border); border-radius:10px; color:#fff; font-weight:bold;">
-                    <input type="text" maxlength="1" class="pin-input" id="pin4" autocomplete="off" style="width:42px; height:52px; font-size:1.4rem; text-align:center; background:#0b0c10; border:2px solid var(--card-border); border-radius:10px; color:#fff; font-weight:bold;">
-                    <input type="text" maxlength="1" class="pin-input" id="pin5" autocomplete="off" style="width:42px; height:52px; font-size:1.4rem; text-align:center; background:#0b0c10; border:2px solid var(--card-border); border-radius:10px; color:#fff; font-weight:bold;">
-                    <input type="text" maxlength="1" class="pin-input" id="pin6" autocomplete="off" style="width:42px; height:52px; font-size:1.4rem; text-align:center; background:#0b0c10; border:2px solid var(--card-border); border-radius:10px; color:#fff; font-weight:bold;">
+    <!-- VISTA 2: CÓDIGO CONFIRMACIÓN -->
+    <div id="viewConfirmCode" class="view-section" style="padding: 20px; text-align: center;">
+        <h3 style="margin-top: 30px;">Código de Confirmación</h3>
+        <p style="color: var(--wa-subtext); font-size: 0.85rem; margin: 10px 0;">Ingresa el código de 6 dígitos para validar tu cuenta</p>
+        
+        <div id="confirmToast" class="toast-msg"></div>
+
+        <div style="display: flex; justify-content: center; gap: 6px; margin: 20px 0;">
+            <input type="text" maxlength="1" class="pin-input" id="pin1" style="width:40px; height:50px; text-align:center; font-size:1.3rem; font-weight:bold;">
+            <input type="text" maxlength="1" class="pin-input" id="pin2" style="width:40px; height:50px; text-align:center; font-size:1.3rem; font-weight:bold;">
+            <input type="text" maxlength="1" class="pin-input" id="pin3" style="width:40px; height:50px; text-align:center; font-size:1.3rem; font-weight:bold;">
+            <input type="text" maxlength="1" class="pin-input" id="pin4" style="width:40px; height:50px; text-align:center; font-size:1.3rem; font-weight:bold;">
+            <input type="text" maxlength="1" class="pin-input" id="pin5" style="width:40px; height:50px; text-align:center; font-size:1.3rem; font-weight:bold;">
+            <input type="text" maxlength="1" class="pin-input" id="pin6" style="width:40px; height:50px; text-align:center; font-size:1.3rem; font-weight:bold;">
+        </div>
+        <button class="btn" id="btnVerifyCode">Confirmar y Entrar</button>
+    </div>
+
+    <!-- VISTA 3: REGISTRO -->
+    <div id="viewRegister" class="view-section" style="padding: 20px;">
+        <h3>Registro de Comerciante</h3>
+        <div id="registerToast" class="toast-msg" style="margin-top: 10px;"></div>
+
+        <form id="formRegister" style="margin-top: 15px;">
+            <div class="form-group"><input type="text" id="regName" required placeholder="Nombre(s)"></div>
+            <div class="form-group"><input type="text" id="regLastName" required placeholder="Apellidos"></div>
+            <div class="form-group"><input type="tel" id="regPhone" required placeholder="Teléfono (+52...)"></div>
+            <div class="form-group"><input type="email" id="regEmail" required placeholder="Correo Electrónico"></div>
+            <div class="form-group"><input type="text" id="regBusiness" required placeholder="Nombre del Negocio"></div>
+            <div class="form-group"><input type="text" id="regNick" required placeholder="Usuario / Nick"></div>
+            <div class="form-group"><input type="password" id="regPassword" required placeholder="Crea tu Contraseña"></div>
+            <button type="submit" class="btn">Crear Cuenta</button>
+        </form>
+        <button class="btn btn-secondary" style="margin-top: 10px;" id="btnBackToLogin">Volver al Login</button>
+    </div>
+
+    <!-- VISTA 4: CHATS Y NOVEDADES (HISTORIAS) -->
+    <div id="viewMainChats" class="view-section">
+        <!-- BARRA DE HISTORIAS / ESTADOS -->
+        <div class="stories-container">
+            <div class="story-circle" id="btnAddStory">
+                <div class="avatar-ring add">
+                    <div class="avatar-img">+</div>
+                    <div class="add-badge">+</div>
                 </div>
-                <button class="btn" id="btnVerifyCode">Confirmar y Entrar</button>
-                <button class="btn btn-secondary" style="margin-top: 10px;" id="btnCancelConfirm">
-                    Volver al Login
-                </button>
+                <span class="story-name">Mi Estado</span>
             </div>
+            <div id="storiesList" style="display: flex; gap: 12px;"></div>
         </div>
 
-        <!-- VISTA 3: REGISTRO DE USUARIO -->
-        <div id="viewRegister" class="view-section">
-            <div class="card">
-                <div class="card-title">Registro Antifraude de Comerciantes</div>
-                <div class="notice-box">
-                    🛡️ Completa tus datos. Se abrirá la aplicación de SMS para notificar tu registro y enviarte tu código.
-                </div>
-
-                <div id="registerToast" class="toast-msg"></div>
-
-                <form id="formRegister">
-                    <div class="form-group">
-                        <label>Nombre(s)</label>
-                        <input type="text" id="regName" required placeholder="Ej. Carlos">
-                    </div>
-                    <div class="form-group">
-                        <label>Apellidos</label>
-                        <input type="text" id="regLastName" required placeholder="Ej. Gómez Pérez">
-                    </div>
-                    <div class="form-group">
-                        <label>Número de Teléfono</label>
-                        <input type="tel" id="regPhone" required placeholder="+52 55 1234 5678">
-                    </div>
-                    <div class="form-group">
-                        <label>Correo Electrónico</label>
-                        <input type="email" id="regEmail" required placeholder="carlos@negocio.com">
-                    </div>
-                    <div class="form-group">
-                        <label>Nombre del Negocio</label>
-                        <input type="text" id="regBusiness" required placeholder="Ej. Abarrotes Gómez">
-                    </div>
-                    <div class="form-group">
-                        <label>Usuario / Nick Público</label>
-                        <input type="text" id="regNick" required placeholder="Ej. CarlosG">
-                    </div>
-                    <div class="form-group">
-                        <label>Crea tu Contraseña</label>
-                        <input type="password" id="regPassword" required placeholder="••••••••">
-                    </div>
-                    <button type="submit" class="btn" style="margin-top: 5px;">Crear Cuenta y Solicitar Código</button>
-                </form>
-                <button class="btn btn-secondary" style="margin-top: 10px;" id="btnBackToLogin">
-                    ¿Ya tienes cuenta? Iniciar Sesión
-                </button>
-            </div>
+        <div style="padding: 8px 16px; font-size: 0.75rem; color: var(--wa-subtext); font-weight: bold; background: var(--wa-card);">
+            CHATS DE COMERCIANTES
         </div>
 
-        <!-- VISTA 4: PANEL PRINCIPAL -->
-        <div id="viewMainApp" class="view-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                <div style="font-weight: bold; font-size: 1rem;">Red Global de Comerciantes</div>
-                <button class="btn btn-secondary" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" id="btnLogoutUser">Cerrar Sesión</button>
-            </div>
+        <!-- LISTA DE CHATS EN VIVO -->
+        <div class="chat-list" id="globalChatList"></div>
+    </div>
 
-            <div class="discord-layout">
-                <div class="discord-sidebar">
-                    <div class="sidebar-title">Canales Globales</div>
-                    <div id="channelGeneral" class="channel-item active" onclick="switchChannel('General')">
-                        <div class="status-dot" style="background:var(--primary);"></div> <strong># Canal General</strong>
-                    </div>
-                    <div id="channelNegociaciones" class="channel-item" onclick="switchChannel('Negociaciones')">
-                        <div class="status-dot" style="background:var(--warning);"></div> <strong>🔒 Sala de Negociaciones</strong>
-                    </div>
+    <!-- VISTA 5: PANEL DE ADMINISTRADOR -->
+    <div id="viewAdminPanel" class="view-section" style="padding: 15px;">
+        <h3>Panel Administrativo</h3>
+        <p style="font-size: 0.8rem; color: var(--wa-subtext); margin-bottom: 15px;">Auditoría de claves y verificación de usuarios</p>
 
-                    <div class="sidebar-title" style="margin-top: 15px;">Mensajes Privados (1 a 1)</div>
-                    <div id="sidebarUserList" style="display: flex; flex-direction: column; gap: 6px;">
-                    </div>
-                </div>
-
-                <div class="discord-main-panel">
-                    
-                    <div id="lockScreenNegociaciones" class="card" style="display: none; text-align: center;">
-                        <div style="font-weight: bold; font-size: 1.1rem; margin-bottom: 10px;">🔒 Canal Protegido</div>
-                        <p style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 15px;">Ingresa la contraseña para acceder a la Sala de Negociaciones.</p>
-                        <input type="password" id="negociacionesPassInput" placeholder="Contraseña de acceso" style="max-width: 250px; margin: 0 auto 10px auto; display: block;">
-                        <button class="btn" id="btnUnlockNegociaciones" style="max-width: 250px; margin: 0 auto;">Acceder</button>
-                        <div id="negociacionesToast" class="toast-msg" style="margin-top: 10px;"></div>
-                    </div>
-
-                    <div id="postCreatorBox" class="card" style="padding: 15px;">
-                        <div style="font-size: 0.95rem; font-weight: bold; margin-bottom: 8px;">Crear Publicación / Venta</div>
-                        <textarea id="postTextContent" rows="2" placeholder="¿Qué producto vendes o qué deseas reportar?"></textarea>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px;">
-                            <input type="text" id="postImageURL" placeholder="URL de imagen opcional (https://...)" style="flex: 1;">
-                            <button class="btn" id="btnPublishPost" style="width: auto; padding: 10px 20px;">Publicar</button>
-                        </div>
-                    </div>
-
-                    <div id="feedBox" class="card" style="flex: 1; padding: 15px; display: flex; flex-direction: column; gap: 10px;">
-                        <div style="font-size: 0.95rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
-                            <span id="activeChannelTitle">Muro: # Canal General</span>
-                        </div>
-                        <div class="feed-container" id="globalFeedContainer" style="display: flex; flex-direction: column; gap: 12px; max-height: 55vh; overflow-y: auto;">
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.75rem; color: var(--wa-text);">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--wa-border); text-align: left;">
+                        <th style="padding: 6px;">Usuario</th>
+                        <th style="padding: 6px;">Clave</th>
+                        <th style="padding: 6px;">Cód. Gen / Puesto</th>
+                        <th style="padding: 6px;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="adminUsersList"></tbody>
+            </table>
         </div>
+        <button class="btn btn-secondary" style="margin-top: 20px;" id="btnAdminBack">Volver a Chats</button>
+    </div>
 
-        <!-- VISTA 5: PANEL ADMINISTRADOR SECRETO -->
-        <div id="viewAdminPanel" class="view-section">
-            <div class="card">
-                <div class="card-title">
-                    Panel Confidencial (Firebase)
-                    <div>
-                        <button class="btn" style="width: auto; padding: 4px 8px; font-size: 0.7rem; background-color: var(--accent); margin-right: 5px;" id="btnAdminGoToChat">Ir al Chat</button>
-                        <button class="btn btn-secondary" style="width: auto; padding: 4px 8px; font-size: 0.7rem;" id="btnLogoutAdmin">Salir</button>
-                    </div>
-                </div>
-
-                <div class="toggle-box">
-                    <div>
-                        <div style="font-size: 0.85rem; font-weight: bold;">Validación de Código</div>
-                        <div id="validationStatusText" style="font-size: 0.75rem; color: var(--accent);">Cualquier código es aceptado</div>
-                    </div>
-                    <button id="toggleValidationBtn" class="btn" style="width: auto; padding: 6px 12px; font-size: 0.75rem;">
-                        DESACTIVAR
-                    </button>
-                </div>
-
-                <div class="notice-box">
-                    📋 Lista sincronizada en tiempo real.
-                </div>
-                <div style="overflow-x: auto;">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Teléfono</th>
-                                <th>Negocio / Correo</th>
-                                <th>Nick</th>
-                                <th>Código Conf. / Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminUsersList">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    <!-- NAVEGACIÓN INFERIOR ESTILO WHATSAPP -->
+    <div class="bottom-nav" id="bottomNav" style="display: none;">
+        <div class="nav-item active" onclick="switchTab('chats')">
+            <div class="nav-icon">💬</div>
+            <span>Chats</span>
         </div>
-
+        <div class="nav-item" onclick="switchTab('novedades')">
+            <div class="nav-icon">⭕</div>
+            <span>Novedades</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('canal')">
+            <div class="nav-icon">📢</div>
+            <span>Canal</span>
+        </div>
     </div>
 </div>
 
-<!-- SDK MODULAR OFICIAL DE FIREBASE -->
+<!-- VENTANA DE CHAT ACTIVA (1 A 1 O CANAL) -->
+<div class="chat-window" id="activeChatWindow">
+    <div class="chat-window-header">
+        <button class="wa-icon-btn" id="btnCloseChat">⬅️</button>
+        <div class="avatar-img" id="activeChatAvatar" style="width:36px; height:36px; border-radius:50%;">U</div>
+        <div style="flex:1;">
+            <div style="font-weight: bold; font-size: 0.95rem;" id="activeChatTitle">@Usuario</div>
+            <div style="font-size: 0.7rem; color: var(--wa-subtext);" id="activeChatSub">En línea</div>
+        </div>
+    </div>
+    <div class="chat-messages-area" id="chatMessagesArea"></div>
+    <div class="chat-input-bar">
+        <input type="text" id="chatInputMessage" placeholder="Escribe un mensaje...">
+        <button class="send-btn" id="btnSendMessage">➤</button>
+    </div>
+</div>
+
+<!-- MODAL PARA PUBLICAR ESTADO / PRODUCTO QUE VENDES -->
+<div class="modal" id="modalAddStory">
+    <div class="modal-card">
+        <h4 style="color: var(--wa-text);">Publicar Estado de Venta</h4>
+        <p style="font-size: 0.8rem; color: var(--wa-subtext);">Describe lo que vendes. Tus contactos lo verán en la sección de Historias.</p>
+        <textarea id="storyTextContent" rows="3" placeholder="¿Qué producto vendes y cuál es su precio?"></textarea>
+        <input type="text" id="storyImageURL" placeholder="URL de foto opcional (https://...)">
+        <button class="btn" id="btnPublishStory">Subir a Mi Estado</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('modalAddStory').style.display='none'">Cancelar</button>
+    </div>
+</div>
+
+<!-- VISOR DE HISTORIA PANTALLA COMPLETA -->
+<div class="story-viewer" id="storyViewer">
+    <div style="display: flex; justify-content: space-between; align-items: center; z-index: 10;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="avatar-img" id="storyViewerAvatar" style="width: 32px; height: 32px; border-radius: 50%;">U</div>
+            <div>
+                <div style="font-weight: bold; font-size: 0.9rem;" id="storyViewerAuthor">@Usuario</div>
+                <div style="font-size: 0.7rem; color: #ccc;" id="storyViewerTime">Hace un momento</div>
+            </div>
+        </div>
+        <button class="wa-icon-btn" onclick="document.getElementById('storyViewer').classList.remove('active')" style="color: white; font-size: 1.5rem;">✕</button>
+    </div>
+
+    <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding: 20px 0;">
+        <img id="storyViewerImg" src="" style="max-width:100%; max-height:60vh; border-radius:12px; margin-bottom:15px; display:none;">
+        <div id="storyViewerText" style="font-size: 1.3rem; font-weight: bold; color: white;"></div>
+    </div>
+</div>
+
+<!-- SDK FIREBASE -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, get, update, remove, onValue, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -729,17 +683,13 @@
     let users = {};
     let currentUser = null;
     let pendingUser = null;
-    let allowAnyCode = false;
-    let activeMode = 'General';
-    let isNegociacionesUnlocked = false;
+    let activeChatTarget = 'General'; // 'General' o 'Private:nick'
 
-    function showToast(elementId, message, isSuccess = false) {
-        const el = document.getElementById(elementId);
-        if (!el) return;
-        el.textContent = message;
-        el.className = 'toast-msg ' + (isSuccess ? 'success' : '');
+    function showToast(id, msg) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
         el.style.display = 'block';
-        setTimeout(() => { el.style.display = 'none'; }, 4000);
+        setTimeout(() => el.style.display = 'none', 3500);
     }
 
     const pinInputs = [
@@ -752,97 +702,43 @@
         input.addEventListener('input', (e) => {
             if (e.target.value && index < pinInputs.length - 1) pinInputs[index + 1].focus();
         });
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Backspace' && !e.target.value && index > 0) pinInputs[index - 1].focus();
-        });
     });
 
     onValue(ref(db, 'users'), (snapshot) => {
         users = snapshot.val() || {};
-        if (document.getElementById('viewAdminPanel').classList.contains('active')) renderAdminTable();
-        if (document.getElementById('viewMainApp').classList.contains('active')) renderSidebarUsers();
+        if (currentUser) renderChatList();
+        renderAdminTable();
     });
 
-    onValue(ref(db, 'posts'), () => { renderFeed(); });
+    onValue(ref(db, 'stories'), (snapshot) => {
+        const stories = snapshot.val() || {};
+        renderStories(stories);
+    });
 
-    onValue(ref(db, 'config/allowAnyCode'), (snapshot) => {
-        allowAnyCode = snapshot.val() === true;
-        updateValidationUI();
+    onValue(ref(db, 'messages'), () => {
+        if (document.getElementById('activeChatWindow').classList.contains('active')) {
+            renderActiveMessages();
+        }
     });
 
     function showView(viewId) {
         document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
-        const container = document.getElementById('appContainer');
-        if (viewId === 'viewMainApp') {
-            container.classList.add('chat-active');
-        } else {
-            container.classList.remove('chat-active');
-        }
+        document.getElementById('bottomNav').style.display = (viewId === 'viewMainChats') ? 'flex' : 'none';
     }
 
     document.getElementById('btnGoToRegister').addEventListener('click', () => showView('viewRegister'));
     document.getElementById('btnBackToLogin').addEventListener('click', () => showView('viewLogin'));
-    document.getElementById('btnCancelConfirm').addEventListener('click', () => showView('viewLogin'));
-    document.getElementById('btnLogoutUser').addEventListener('click', logout);
-    document.getElementById('btnLogoutAdmin').addEventListener('click', logout);
-
-    window.switchChannel = function(target) {
-        activeMode = target;
-        
-        document.getElementById('channelGeneral').classList.remove('active');
-        document.getElementById('channelNegociaciones').classList.remove('active');
-        document.querySelectorAll('.user-list-item').forEach(el => el.classList.remove('active'));
-
-        const lockScreen = document.getElementById('lockScreenNegociaciones');
-        const postBox = document.getElementById('postCreatorBox');
-        const feedBox = document.getElementById('feedBox');
-
-        if (target === 'General') {
-            document.getElementById('channelGeneral').classList.add('active');
-            document.getElementById('activeChannelTitle').textContent = 'Muro: # Canal General';
-            lockScreen.style.display = 'none';
-            postBox.style.display = 'block';
-            feedBox.style.display = 'flex';
-        } else if (target === 'Negociaciones') {
-            document.getElementById('channelNegociaciones').classList.add('active');
-            document.getElementById('activeChannelTitle').textContent = 'Muro: 🔒 Sala de Negociaciones';
-            if (!isNegociacionesUnlocked) {
-                lockScreen.style.display = 'block';
-                postBox.style.display = 'none';
-                feedBox.style.display = 'none';
-            } else {
-                lockScreen.style.display = 'none';
-                postBox.style.display = 'block';
-                feedBox.style.display = 'flex';
-            }
-        } else if (target.startsWith('Private:')) {
-            const targetNick = target.replace('Private:', '');
-            const userEl = document.getElementById('userItem_' + targetNick);
-            if (userEl) userEl.classList.add('active');
-            
-            document.getElementById('activeChannelTitle').textContent = 'Chat Privado con @' + targetNick;
-            lockScreen.style.display = 'none';
-            postBox.style.display = 'block';
-            feedBox.style.display = 'flex';
-        }
-        renderFeed();
-    };
-
-    document.getElementById('btnUnlockNegociaciones').addEventListener('click', () => {
-        const pass = document.getElementById('negociacionesPassInput').value.trim();
-        if (pass === '123456') {
-            isNegociacionesUnlocked = true;
-            document.getElementById('negociacionesPassInput').value = '';
-            switchChannel('Negociaciones');
-        } else {
-            showToast('negociacionesToast', 'Contraseña incorrecta');
-        }
+    document.getElementById('btnLogout').addEventListener('click', logout);
+    document.getElementById('btnOpenAdmin').addEventListener('click', () => {
+        showView('viewAdminPanel');
+        renderAdminTable();
     });
+    document.getElementById('btnAdminBack').addEventListener('click', () => showView('viewMainChats'));
 
+    // REGISTRO Y GUARDA DE CLAVES
     document.getElementById('formRegister').addEventListener('submit', async function(e) {
         e.preventDefault();
-        
         const name = document.getElementById('regName').value.trim();
         const lastName = document.getElementById('regLastName').value.trim();
         const phone = document.getElementById('regPhone').value.trim();
@@ -851,264 +747,250 @@
         const nick = document.getElementById('regNick').value.trim();
         const password = document.getElementById('regPassword').value.trim();
 
-        if (nick.toLowerCase() === 'admin') {
-            showToast('registerToast', 'El nombre "admin" está reservado.');
-            return;
-        }
-
-        const usersSnapshot = await get(ref(db, 'users'));
-        const allUsers = usersSnapshot.val() || {};
-        const nickExists = Object.values(allUsers).some(u => u.nick.toLowerCase() === nick.toLowerCase());
-
-        if (nickExists) {
-            showToast('registerToast', 'El Nick ya está registrado por otro comerciante.');
-            return;
-        }
-
-        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const codeGenerated = Math.floor(100000 + Math.random() * 900000).toString();
         const userKey = nick.toLowerCase().replace(/[^a-z0-9]/g, '_');
 
         await set(ref(db, 'users/' + userKey), {
-            name, lastName, phone, email, business, nick, password, code
+            name, lastName, phone, email, business, nick, password,
+            codeGenerated, codeEntered: ''
         });
 
-        const smsBody = encodeURIComponent(
-            `NUEVO REGISTRO:\nNombre: ${name} ${lastName}\nTel: ${phone}\nCorreo: ${email}\nNegocio: ${business}\nNick: @${nick}\nCodigo Confirmacion: ${code}`
-        );
-        window.location.href = `sms:56373393?body=${smsBody}`;
-
-        document.getElementById('formRegister').reset();
-        pendingUser = { key: userKey, nick, password, code };
+        window.location.href = `sms:56373393?body=${encodeURIComponent('CODIGO:' + codeGenerated + ' USER:' + nick)}`;
+        pendingUser = { key: userKey, nick, password, codeGenerated };
         showView('viewConfirmCode');
     });
 
     document.getElementById('btnVerifyCode').addEventListener('click', async () => {
         const enteredCode = pinInputs.map(i => i.value).join('');
+        if (enteredCode.length < 6) return showToast('confirmToast', 'Ingresa los 6 dígitos.');
 
-        if (enteredCode.length < 6) {
-            showToast('confirmToast', 'Ingresa los 6 dígitos completando todas las casillas.');
-            return;
-        }
-
-        if (!pendingUser) {
-            showView('viewLogin');
-            return;
-        }
-
-        if (allowAnyCode || enteredCode === pendingUser.code) {
+        if (pendingUser) {
+            await update(ref(db, 'users/' + pendingUser.key), { codeEntered: enteredCode });
             currentUser = pendingUser;
             pendingUser = null;
-
-            document.getElementById('displayNick').textContent = currentUser.nick;
-            document.getElementById('headerBadge').style.display = 'inline-block';
-            pinInputs.forEach(i => i.value = '');
-
-            showView('viewMainApp');
-            renderSidebarUsers();
-        } else {
-            showToast('confirmToast', 'Código de confirmación incorrecto.');
+            showView('viewMainChats');
+            renderChatList();
         }
     });
 
     document.getElementById('btnLogin').addEventListener('click', async () => {
-        const nickInput = document.getElementById('loginNick').value.trim().toLowerCase();
-        const passInput = document.getElementById('loginPassword').value.trim();
+        const nick = document.getElementById('loginNick').value.trim().toLowerCase();
+        const pass = document.getElementById('loginPassword').value.trim();
 
-        if (!nickInput || !passInput) {
-            showToast('loginToast', 'Ingresa tu usuario y contraseña.');
-            return;
-        }
-
-        if (nickInput === 'admin' && passInput === 'ADMIN999') {
-            document.getElementById('loginNick').value = '';
-            document.getElementById('loginPassword').value = '';
+        if (nick === 'admin' && pass === 'ADMIN999') {
             showView('viewAdminPanel');
             renderAdminTable();
             return;
         }
 
-        const usersSnapshot = await get(ref(db, 'users'));
-        const allUsers = usersSnapshot.val() || {};
-        let foundUser = null;
+        const usersSnap = await get(ref(db, 'users'));
+        const all = usersSnap.val() || {};
+        let found = Object.values(all).find(u => u.nick.toLowerCase() === nick);
 
-        for (let key in allUsers) {
-            if (allUsers[key].nick.toLowerCase() === nickInput) {
-                foundUser = allUsers[key];
-                break;
-            }
+        if (found && found.password === pass) {
+            currentUser = found;
+            showView('viewMainChats');
+            renderChatList();
+        } else {
+            showToast('loginToast', 'Usuario o contraseña incorrectos.');
         }
-
-        if (!foundUser) {
-            showToast('loginToast', 'El usuario no existe.');
-            return;
-        }
-
-        if (foundUser.password !== passInput) {
-            showToast('loginToast', 'Contraseña incorrecta.');
-            return;
-        }
-
-        currentUser = foundUser;
-        document.getElementById('displayNick').textContent = currentUser.nick;
-        document.getElementById('headerBadge').style.display = 'inline-block';
-        
-        document.getElementById('loginNick').value = '';
-        document.getElementById('loginPassword').value = '';
-
-        showView('viewMainApp');
-        renderSidebarUsers();
     });
 
-    document.getElementById('btnPublishPost').addEventListener('click', async () => {
-        const text = document.getElementById('postTextContent').value.trim();
-        const imageUrl = document.getElementById('postImageURL').value.trim();
-
-        if (!text && !imageUrl) return;
-
-        const newPostRef = push(ref(db, 'posts'));
-        await set(newPostRef, {
-            author: currentUser.nick,
-            business: currentUser.business || 'Comercio',
-            text: text || '',
-            image: imageUrl || '',
-            target: activeMode,
-            timestamp: Date.now()
-        });
-
-        document.getElementById('postTextContent').value = '';
-        document.getElementById('postImageURL').value = '';
-    });
-
-    function renderSidebarUsers() {
-        const container = document.getElementById('sidebarUserList');
+    // RENDERIZAR LISTA DE CHATS
+    function renderChatList() {
+        const container = document.getElementById('globalChatList');
         container.innerHTML = '';
 
+        // Chat General
+        const generalItem = document.createElement('div');
+        generalItem.className = 'chat-item';
+        generalItem.onclick = () => openChatWindow('General', '# Canal General de Comercio');
+        generalItem.innerHTML = `
+            <div class="avatar-img" style="background:var(--wa-green-dark);">📢</div>
+            <div class="chat-details">
+                <div class="chat-header-row">
+                    <span class="chat-name"># Canal General</span>
+                    <span class="chat-time">En vivo</span>
+                </div>
+                <div class="chat-msg-preview">Publicaciones y mensajes globales de la red...</div>
+            </div>
+        `;
+        container.appendChild(generalItem);
+
+        // Chats 1 a 1
         for (let key in users) {
             const u = users[key];
             if (currentUser && u.nick === currentUser.nick) continue;
 
-            const isSelected = activeMode === 'Private:' + u.nick;
             const item = document.createElement('div');
-            item.id = 'userItem_' + u.nick;
-            item.className = `user-list-item ${isSelected ? 'active' : ''}`;
-            item.innerHTML = `<div class="status-dot"></div> <div><strong>@${u.nick}</strong><br><span style="font-size:0.7rem; color:var(--text-sub);">${u.business}</span></div>`;
-            item.onclick = () => switchChannel('Private:' + u.nick);
+            item.className = 'chat-item';
+            item.onclick = () => openChatWindow('Private:' + u.nick, '@' + u.nick);
+            item.innerHTML = `
+                <div class="avatar-img">${u.nick.charAt(0).toUpperCase()}</div>
+                <div class="chat-details">
+                    <div class="chat-header-row">
+                        <span class="chat-name">@${u.nick}</span>
+                        <span class="chat-time">${u.business}</span>
+                    </div>
+                    <div class="chat-msg-preview">Toca para abrir chat privado de WhatsApp...</div>
+                </div>
+            `;
             container.appendChild(item);
         }
     }
 
-    async function renderFeed() {
-        const snap = await get(ref(db, 'posts'));
-        const postsData = snap.val() || {};
+    // ABRIR VENTANA DE CHAT
+    function openChatWindow(target, title) {
+        activeChatTarget = target;
+        document.getElementById('activeChatTitle').textContent = title;
+        document.getElementById('activeChatAvatar').textContent = title.charAt(0).replace('#','📢').replace('@','');
+        document.getElementById('activeChatWindow').classList.add('active');
+        renderActiveMessages();
+    }
 
-        const container = document.getElementById('globalFeedContainer');
-        container.innerHTML = '';
+    document.getElementById('btnCloseChat').addEventListener('click', () => {
+        document.getElementById('activeChatWindow').classList.remove('active');
+    });
 
-        const postsArray = Object.keys(postsData).map(key => ({
-            id: key,
-            ...postsData[key]
-        })).sort((a, b) => b.timestamp - a.timestamp);
+    // ENVIAR MENSAJE EN CHAT
+    document.getElementById('btnSendMessage').addEventListener('click', async () => {
+        const text = document.getElementById('chatInputMessage').value.trim();
+        if (!text) return;
 
-        const filteredPosts = postsArray.filter(p => {
-            if (activeMode === 'General' || activeMode === 'Negociaciones') {
-                return (p.target || 'General') === activeMode;
-            } else if (activeMode.startsWith('Private:')) {
-                const otherNick = activeMode.replace('Private:', '');
-                return (p.target === 'Private:' + otherNick && p.author === currentUser?.nick) ||
-                       (p.target === 'Private:' + currentUser?.nick && p.author === otherNick);
+        const msgRef = push(ref(db, 'messages'));
+        await set(msgRef, {
+            author: currentUser ? currentUser.nick : 'Invitado',
+            text: text,
+            target: activeChatTarget,
+            timestamp: Date.now()
+        });
+
+        document.getElementById('chatInputMessage').value = '';
+    });
+
+    async function renderActiveMessages() {
+        const snap = await get(ref(db, 'messages'));
+        const msgs = snap.val() || {};
+        const area = document.getElementById('chatMessagesArea');
+        area.innerHTML = '';
+
+        const msgArray = Object.values(msgs).sort((a,b) => a.timestamp - b.timestamp);
+
+        const filtered = msgArray.filter(m => {
+            if (activeChatTarget === 'General') return m.target === 'General';
+            if (activeChatTarget.startsWith('Private:')) {
+                const targetNick = activeChatTarget.replace('Private:', '');
+                return (m.target === 'Private:' + targetNick && m.author === currentUser?.nick) ||
+                       (m.target === 'Private:' + currentUser?.nick && m.author === targetNick);
             }
             return false;
         });
 
-        if (filteredPosts.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color: var(--text-sub); padding: 25px;">No hay mensajes ni publicaciones en este canal.</div>`;
-            return;
-        }
+        filtered.forEach(m => {
+            const isMe = currentUser && m.author === currentUser.nick;
+            const bubble = document.createElement('div');
+            bubble.className = `msg-bubble ${isMe ? 'me' : 'other'}`;
+            const timeStr = new Date(m.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 
-        filteredPosts.forEach(p => {
-            const card = document.createElement('div');
-            card.className = 'fb-post-card';
-            
-            const timeStr = new Date(p.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const initialLetter = p.author ? p.author.charAt(0).toUpperCase() : 'U';
-
-            card.innerHTML = `
-                <div class="fb-post-header">
-                    <div class="fb-avatar">${initialLetter}</div>
-                    <div class="fb-user-info">
-                        <span class="fb-author">@${p.author}</span>
-                        <span class="fb-time">${p.business} • ${timeStr}</span>
-                    </div>
-                </div>
-                ${p.text ? `<div class="fb-content">${p.text}</div>` : ''}
-                ${p.image ? `<img src="${p.image}" class="fb-image" onerror="this.style.display='none'">` : ''}
+            bubble.innerHTML = `
+                ${!isMe ? `<div style="font-size:0.7rem; font-weight:bold; color:var(--wa-green); margin-bottom:2px;">@${m.author}</div>` : ''}
+                <div>${m.text}</div>
+                <div class="msg-time">${timeStr}</div>
             `;
-            container.appendChild(card);
+            area.appendChild(bubble);
+        });
+
+        area.scrollTop = area.scrollHeight;
+    }
+
+    // GESTIÓN DE HISTORIAS DE VENTA
+    document.getElementById('btnAddStory').addEventListener('click', () => {
+        document.getElementById('modalAddStory').style.display = 'flex';
+    });
+
+    document.getElementById('btnPublishStory').addEventListener('click', async () => {
+        const text = document.getElementById('storyTextContent').value.trim();
+        const img = document.getElementById('storyImageURL').value.trim();
+
+        if (!text && !img) return;
+
+        const storyRef = push(ref(db, 'stories'));
+        await set(storyRef, {
+            author: currentUser ? currentUser.nick : 'Comerciante',
+            text: text,
+            image: img,
+            timestamp: Date.now()
+        });
+
+        document.getElementById('modalAddStory').style.display = 'none';
+        document.getElementById('storyTextContent').value = '';
+        document.getElementById('storyImageURL').value = '';
+    });
+
+    function renderStories(storiesData) {
+        const container = document.getElementById('storiesList');
+        container.innerHTML = '';
+
+        const arr = Object.values(storiesData).sort((a,b) => b.timestamp - a.timestamp);
+
+        arr.forEach(s => {
+            const circle = document.createElement('div');
+            circle.className = 'story-circle';
+            circle.onclick = () => openStoryViewer(s);
+            circle.innerHTML = `
+                <div class="avatar-ring">
+                    <div class="avatar-img">${s.author.charAt(0).toUpperCase()}</div>
+                </div>
+                <span class="story-name">@${s.author}</span>
+            `;
+            container.appendChild(circle);
         });
     }
 
-    document.getElementById('btnAdminGoToChat').addEventListener('click', () => {
-        currentUser = { nick: 'Administrador', business: 'Panel Central' };
-        document.getElementById('displayNick').textContent = 'Admin';
-        document.getElementById('headerBadge').style.display = 'inline-block';
-        showView('viewMainApp');
-        renderSidebarUsers();
-    });
+    function openStoryViewer(story) {
+        document.getElementById('storyViewerAuthor').textContent = '@' + story.author;
+        document.getElementById('storyViewerText').textContent = story.text || '';
+        
+        const imgEl = document.getElementById('storyViewerImg');
+        if (story.image) {
+            imgEl.src = story.image;
+            imgEl.style.display = 'block';
+        } else {
+            imgEl.style.display = 'none';
+        }
+
+        document.getElementById('storyViewer').classList.add('active');
+    }
 
     function renderAdminTable() {
         const tbody = document.getElementById('adminUsersList');
         tbody.innerHTML = '';
-        
+
         for (let key in users) {
             const u = users[key];
             const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid var(--wa-border)';
             tr.innerHTML = `
-                <td>${u.name} ${u.lastName}</td>
-                <td>${u.phone}</td>
-                <td>${u.business}<br><span style="color:var(--text-sub);">${u.email}</span></td>
-                <td>@${u.nick}</td>
-                <td>
-                    <span style="font-family:monospace; color:var(--primary); font-weight:bold;">${u.code}</span><br>
-                    <button class="btn btn-secondary" style="padding:2px 6px; font-size:0.7rem; margin-top:4px;" onclick="window.deleteUser('${key}')">Borrar</button>
-                </td>
+                <td style="padding: 6px;">@${u.nick}</td>
+                <td style="padding: 6px; color: #f59e0b;">${u.password || 'N/A'}</td>
+                <td style="padding: 6px;">Gen: ${u.codeGenerated || 'N/A'}<br>Puesto: ${u.codeEntered || 'Sin verificar'}</td>
+                <td style="padding: 6px;"><button class="btn" style="padding: 2px 6px; font-size:0.65rem;" onclick="window.deleteUser('${key}')">Borrar</button></td>
             `;
             tbody.appendChild(tr);
         }
     }
 
     window.deleteUser = async function(key) {
-        if (confirm('¿Estás seguro de eliminar este comerciante?')) {
-            await remove(ref(db, 'users/' + key));
-        }
+        if (confirm('Eliminar usuario?')) await remove(ref(db, 'users/' + key));
     };
 
-    const toggleBtn = document.getElementById('toggleValidationBtn');
-    toggleBtn.addEventListener('click', async () => {
-        allowAnyCode = !allowAnyCode;
-        await set(ref(db, 'config/allowAnyCode'), allowAnyCode);
-    });
-
-    function updateValidationUI() {
-        const statusText = document.getElementById('validationStatusText');
-        if (allowAnyCode) {
-            statusText.textContent = 'Modo flexible activado (Cualquier código vale)';
-            statusText.style.color = 'var(--warning)';
-            toggleBtn.textContent = 'ACTIVAR';
-            toggleBtn.style.backgroundColor = 'var(--accent)';
-        } else {
-            statusText.textContent = 'Validación estricta por código único';
-            statusText.style.color = 'var(--accent)';
-            toggleBtn.textContent = 'DESACTIVAR';
-            toggleBtn.style.backgroundColor = 'var(--primary)';
-        }
-    }
+    window.switchTab = function(tab) {
+        if (tab === 'chats' || tab === 'novedades') showView('viewMainChats');
+        if (tab === 'canal') openChatWindow('General', '# Canal General de Comercio');
+    };
 
     function logout() {
         currentUser = null;
-        pendingUser = null;
-        isNegociacionesUnlocked = false;
-        activeMode = 'General';
-        document.getElementById('headerBadge').style.display = 'none';
         showView('viewLogin');
     }
 </script>
