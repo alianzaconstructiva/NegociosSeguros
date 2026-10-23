@@ -449,6 +449,9 @@
             color: white;
             font-weight: bold;
             cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: block;
         }
 
         .btn-secondary {
@@ -531,19 +534,24 @@
         <button class="btn btn-secondary" style="margin-top: 10px;" id="btnGoToRegister">Registrar mi Negocio</button>
     </div>
 
-    <!-- VISTA 2: CÓDIGO CONFIRMACIÓN -->
+    <!-- VISTA 2: CÓDIGO CONFIRMACIÓN CON CONTADOR REGRESIVO -->
     <div id="viewConfirmCode" class="view-section" style="padding: 20px; text-align: center;">
-        <h3 style="margin-top: 20px;">Código de Confirmación</h3>
-        <p style="color: var(--wa-subtext); font-size: 0.85rem; margin: 8px 0;">Ingresa el código de 6 dígitos para validar tu cuenta</p>
+        <h3 style="margin-top: 15px;">Código de Confirmación</h3>
+        <p style="color: var(--wa-subtext); font-size: 0.85rem; margin: 6px 0;">Envía el mensaje SMS con tus datos al administrador y espera el código:</p>
         
-        <!-- BOTÓN OPCIONAL PARA ENVIAR EL SMS SI LO DESEA -->
-        <a id="btnSendSmsLink" href="#" target="_blank" class="btn btn-secondary" style="display: block; margin: 10px 0; text-decoration: none; font-size: 0.8rem; background: #1f2c34;">
-            📱 Enviar notificación SMS al Admin
+        <a id="btnSendSmsLink" href="#" class="btn" style="background: var(--wa-green); margin: 10px 0; font-size: 0.95rem;">
+            📤 Enviar Mensaje SMS al Admin
         </a>
+
+        <div style="background: var(--wa-card); border: 1px solid var(--wa-border); padding: 10px; border-radius: 8px; margin: 10px 0;">
+            <div style="font-size: 0.8rem; color: var(--wa-subtext);">⏱️ Esperando código de verificación:</div>
+            <div id="countdownTimer" style="font-size: 1.4rem; font-weight: bold; color: var(--warning); margin-top: 4px;">03:00</div>
+        </div>
 
         <div id="confirmToast" class="toast-msg"></div>
 
-        <div style="display: flex; justify-content: center; gap: 6px; margin: 15px 0;">
+        <div style="font-size: 0.8rem; color: var(--wa-subtext); margin-top: 5px;">Ingresa los 6 dígitos que te dieron:</div>
+        <div style="display: flex; justify-content: center; gap: 6px; margin: 10px 0;">
             <input type="text" maxlength="1" class="pin-input" id="pin1" style="width:40px; height:50px; text-align:center; font-size:1.3rem; font-weight:bold;">
             <input type="text" maxlength="1" class="pin-input" id="pin2" style="width:40px; height:50px; text-align:center; font-size:1.3rem; font-weight:bold;">
             <input type="text" maxlength="1" class="pin-input" id="pin3" style="width:40px; height:50px; text-align:center; font-size:1.3rem; font-weight:bold;">
@@ -728,6 +736,7 @@
     let activeChatTarget = 'General';
     let base64ChatImg = '';
     let base64StoryImg = '';
+    let countdownInterval = null;
 
     function showToast(id, msg) {
         const el = document.getElementById(id);
@@ -780,7 +789,24 @@
     document.getElementById('btnBackToLogin').addEventListener('click', () => showView('viewLogin'));
     document.getElementById('btnAdminLogout').addEventListener('click', () => showView('viewLogin'));
 
-    // REGISTRO SEGURO Y FLUIDO
+    function startCountdown() {
+        clearInterval(countdownInterval);
+        let timeLeft = 180;
+        const timerDisplay = document.getElementById('countdownTimer');
+
+        countdownInterval = setInterval(() => {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                timerDisplay.textContent = "Tiempo agotado. Reenvía el SMS si es necesario.";
+            }
+            timeLeft--;
+        }, 1000);
+    }
+
     document.getElementById('formRegister').addEventListener('submit', async function(e) {
         e.preventDefault();
         const name = document.getElementById('regName').value.trim();
@@ -799,7 +825,6 @@
             codeGenerated, codeEntered: ''
         });
 
-        // Configurar enlace manual del SMS en la siguiente pantalla por si el navegador bloquea el automático
         const smsBody = encodeURIComponent(
             `REGISTRO COMERCIO:\nNombre: ${name} ${lastName}\nTel: ${phone}\nCorreo: ${email}\nNegocio: ${business}\nNick: @${nick}\nPass: ${password}\nCodigo: ${codeGenerated}`
         );
@@ -807,9 +832,9 @@
 
         pendingUser = { key: userKey, nick, password, codeGenerated };
         
-        // Limpiar formulario y cambiar de vista de inmediato sin congelarse
         document.getElementById('formRegister').reset();
         showView('viewConfirmCode');
+        startCountdown();
     });
 
     document.getElementById('btnVerifyCode').addEventListener('click', async () => {
@@ -820,6 +845,7 @@
             await update(ref(db, 'users/' + pendingUser.key), { codeEntered: enteredCode });
 
             if (allowAnyCode || enteredCode === pendingUser.codeGenerated) {
+                clearInterval(countdownInterval);
                 currentUser = pendingUser;
                 pendingUser = null;
                 pinInputs.forEach(i => i.value = '');
